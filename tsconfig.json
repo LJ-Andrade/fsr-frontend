@@ -3,6 +3,16 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths":{
+      "@src/*":["./src/*"],
+      "@app/*":["./src/app/*"],
+      "@shared/*":["./src/app/shared/*"],
+      "@sections/*": ["./src/app/sections/*"],
+      "@private/*": ["./src/app/private/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/assets/styles/*"],
+	  },
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
