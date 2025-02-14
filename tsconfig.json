@@ -12,7 +12,9 @@
       "@services/*": ["./src/app/services/*"],
       "@assets/*": ["./src/assets/*"],
       "@styles/*": ["./src/assets/styles/*"],
-	  },
+      "@environments/*": ["./src/environments/*"],
+      "@environment": ["./src/environments/environment"]
+    },
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,

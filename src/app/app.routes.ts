@@ -6,6 +6,7 @@ import { ResetPasswordComponent } from './public/reset-password/reset-password.c
 import { authGuard } from '@app/core/auth/auth.guard';
 import { ProfileComponent } from './private/profile/profile.component';
 import DashboardComponent from './private/dashboard/dashboard.component';
+import { ApiTestComponent } from './public/api-test/api-test.component';
 
 
 export const routes: Routes = [
@@ -30,6 +31,11 @@ export const routes: Routes = [
 			{
 				path: 'inicio', title: 'Inicio', component: DashboardComponent,
 				data: { }
+			},
+			{ 
+				path: 'api-test', 
+				component: ApiTestComponent,
+				data: { title: 'Rick & Morty API Test' }
 			}
 		]
 	}   
