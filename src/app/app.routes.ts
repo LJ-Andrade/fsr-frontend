@@ -9,16 +9,13 @@ import DashboardComponent from './private/dashboard/dashboard.component';
 
 
 export const routes: Routes = [
-
-	// { path: '', component: MainComponent, pathMatch: 'full'},
-	// { path: 'login', component: LoginComponent, pathMatch: 'full'},
-	// { path: 'request-password-reset', component: RequestResetPasswordComponent, pathMatch: 'full'},
-	// { path: 'reset-password', component: ResetPasswordComponent, pathMatch: 'full'},
-
+	{ path: 'login', component: LoginComponent, pathMatch: 'full'},
+	{ path: 'request-password-reset', component: RequestResetPasswordComponent, pathMatch: 'full'},
+	{ path: 'reset-password', component: ResetPasswordComponent, pathMatch: 'full'},
 	{
 		path: '',
 		component: MainComponent,
-		// canActivate: [ authGuard ], data: { showOnMenu: true },
+		canActivate: [ authGuard ],
 		children: [
 			{ path: '', redirectTo: '', pathMatch: 'full' },
 			{ path: 'dashboard', component: DashboardComponent,
