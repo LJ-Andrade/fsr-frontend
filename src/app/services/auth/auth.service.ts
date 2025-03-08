@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@src/environments/environment';
-import { DataService } from '../services/data.service';
-import { NotificationService } from '../services/notification.service';
+import { DataService } from '../data.service';
+import { NotificationService } from '../notification.service';
 import { Observable } from 'rxjs';
 
 export type LoginStatus = 'pending' | 'authenticating' | 'success' | 'error';
@@ -21,16 +21,23 @@ interface User {
 	id: number;
 	email: string;
 	name: string;
+	first_name: string;
+	last_name: string;
 }
 
 @Injectable({
 	providedIn: 'root',
 })
+
 export class AuthService {
 	notificationService = inject(NotificationService);
 	http = inject(HttpClient);
 	dataService = inject(DataService);
 	router = inject(Router);
+
+	// Use this on the components to check if the user is logged in
+	// isLoggedIn = computed(() => this.authService.isAuthenticated());
+    
 
 	private loginStatus = signal<LoginState>({
 		status: 'pending',
@@ -41,7 +48,6 @@ export class AuthService {
 	});
 
 	loginState = computed(() => this.loginStatus().status);
-	currentUser = computed(() => this.user().user);
 
 	isAuthenticated() {
 		const authToken = localStorage.getItem(environment.tokenKeyName);
@@ -54,13 +60,16 @@ export class AuthService {
 		this.http.post(environment.apiUrl + 'auth/login', loginData)
 		.subscribe({
 			next: (res: any) => {
-				localStorage.setItem(environment.tokenKeyName, res.token);
+				localStorage.setItem(environment.tokenKeyName, res.token.access_token);
 				this.loginStatus.set({ status: 'success' });
 				this.notificationService.success('Bienvenid@', 'Has ingresado correctamente');
 				this.router.navigateByUrl(redirectTo);
+				this.user.set({ user: res.data });
 				setTimeout(() => {
 					this.loginStatus.set({ status: 'pending' });
 				}, 1000);
+
+
 			},
 			error: (error: any) => {
 				if(error.status === 0) {
@@ -104,17 +113,18 @@ export class AuthService {
 		});
 	}
 
-	getUserData() {
-		this.dataService.httpFetch(environment.apiUrl + 'auth/user').subscribe((res: any) => {
-			this.user.set({ user: res.data });
-		});
+	getCurrentUser(): User | null | undefined {
+		return this.user().user;
 	}
 
+
 	logout() {
+
 		this.notificationService.info('Cerrando sesión...', '');
 		this.dataService.httpPost(environment.apiUrl + 'auth/logout', {}).subscribe({
 			next: (res: any) => {
-				if (res.status) {
+				console.log(res);
+				if (res.status || res.message == 'Success') {
 					localStorage.removeItem(environment.tokenKeyName);
 					location.reload();
 				}
@@ -123,6 +133,7 @@ export class AuthService {
 				// Si hay error en el logout, de todas formas limpiamos el token y recargamos
 				localStorage.removeItem(environment.tokenKeyName);
 				location.reload();
+				console.log('Error en el logout');
 			}
 		});
 	}

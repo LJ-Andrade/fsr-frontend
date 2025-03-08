@@ -9,7 +9,7 @@ import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AuthService } from '@app/core/auth/auth.service';
+import { AuthService } from '@src/app/services/auth/auth.service';
 
 @Component({
 	selector: 'app-login',

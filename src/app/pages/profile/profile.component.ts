@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { AuthService } from '@src/app/core/auth/auth.service';
+import { AuthService } from '@src/app/services/auth/auth.service';
 
 // import { PanelComponent } from '@src/app/elements/panel/panel.component';
 

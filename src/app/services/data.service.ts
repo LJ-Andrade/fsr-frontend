@@ -1,0 +1,73 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { environment } from '@src/environments/environment';
+import { Observable } from 'rxjs';
+
+@Injectable({
+    providedIn: 'root'
+})
+
+export class DataService {
+    private http = inject(HttpClient);
+
+    protected defaultOptions = {};
+    
+    constructor() {
+		this.defaultOptions =
+		{
+			headers: new HttpHeaders(
+				{
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${localStorage.getItem(environment.tokenKeyName)}`
+				})
+		}
+	}
+
+	getQueryString(params: any): string {
+		if (params && Object.keys(params).length > 0) {
+			const queryString = Object.keys(params).map(function (key) {
+				if (Array.isArray(params[key]) && params[key].length > 0)
+					return key + '[]=' + params[key].join('&' + key + '[]=');
+				return key + '=' + params[key];
+			}).join('&');
+			return queryString ? `?${queryString}` : '';
+		}
+		return '';
+	}
+
+    httpFetch<T>(url: string, options?: any): Observable<any> {
+		return this.http.get<T>(url, options ?? this.defaultOptions);
+	}
+
+	// Post
+	httpPost<T>(url: string, body: any, options?: any): Observable<any> {
+		return this.http.post<T>(url, body, options ?? this.defaultOptions);
+	}
+
+	// Delete
+	httpDelete<T>(url: string, options?: any): Observable<any> {
+		return this.http.delete<T>(url, options ?? this.defaultOptions);
+	}
+
+	// Put
+	httpPut<T>(url: string, body: any, options?: any): Observable<any> {
+		return this.http.put<T>(url, body, options ?? this.defaultOptions);
+	}
+
+    // makePagination<T>(paginationData: Pagination<T>): any {
+	// 	return {
+	// 		current_page: paginationData.current_page,
+	// 		first_page_url: paginationData.first_page_url,
+	// 		from: paginationData.from,
+	// 		last_page: paginationData.last_page,
+	// 		last_page_url: paginationData.last_page_url,
+	// 		links: paginationData.links,
+	// 		next_page_url: paginationData.next_page_url,
+	// 		path: paginationData.path,
+	// 		per_page: paginationData.per_page,
+	// 		prev_page_url: paginationData.prev_page_url,
+	// 		to: paginationData.to,
+	// 		total: paginationData.total
+	// 	};
+	// }
+}
