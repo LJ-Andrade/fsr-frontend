@@ -1,15 +1,37 @@
 @use 'tailwindcss'
+// @use 'main'
+@tailwind base
+@tailwind components
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap')
-
-
 
 :root
 	--font-family: 'Inter', sans-serif
 
-
 body
 	font-family: var(--font-family)
 
+// OVERRIDES
+
+:root
+	--p-popover-content-padding: 0 !important
+	
+.p-popover
+	border: 0 !important
+	&:after, &:before
+		display: none
+
+.app-dark
+	.p-panel
+		border: 0
+		border-radius: 10px
+		background-color: #1e1e1e !important
+	.p-panel-header
+		border-radius: 10px 10px 0 0
+
+
+
+// ELEMENTS
 .round-empty-button
 	width: 36px
 	height: 36px
@@ -21,23 +43,28 @@ body
 		color: white
 		cursor: pointer
 
-// ::ng-deep .custom-tooltip .p-tooltip-arrow
-// 	left: 20px !important
-// 	top: 5px !important
+.full-width-button
+	width: 100% !important
+	min-width: 200px !important
+	text-align: left
 
-// .custom-popover > .p-popover
-// 	&::after
-// 		border: 1px solid
-// 		left: 90px !important
+// .full-width-button > button
+// 	width: 100%
 
-// .p-popover:after, .p-popover:before
-// 	left: 122px !important
 
-.p-popover:after
-	display: none
+// Custom Dropdown
+.c-dropdown
+	padding: 10px
+	border-radius: 10px
+	transition: all 0.3s ease-in-out
+	&:hover
+		cursor: pointer
+		// filter: brightness(1.2)
+		filter: drop-shadow(2px 4px 6px black)
 
-.p-popover:before
-	display: none
 
-:root
-	--p-popover-content-padding: 0 !important
+h1
+	font-size: 1.6rem
+	font-weight: bold
+	margin-bottom: 15px
+

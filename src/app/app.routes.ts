@@ -7,35 +7,92 @@ import { authGuard } from '@src/app/services/auth/auth.guard';
 import { ProfileComponent } from './pages/profile/profile.component';
 import DashboardComponent from './pages/dashboard/dashboard.component';
 import { ApiTestComponent } from './pages/api-test/api-test.component';
+import { ExamplesComponent } from './pages/examples/examples.component';
 
 /**
  * App routes
  */
+
+// If you want to specify a route but don't want it to appear in the main menu
+// add "skipFromMenu: true" to the route's data
+
 export const routes: Routes = [
-	{ path: 'login', component: LoginComponent, pathMatch: 'full'},
-	{ path: 'request-password-reset', component: RequestResetPasswordComponent, pathMatch: 'full'},
-	{ path: 'reset-password', component: ResetPasswordComponent, pathMatch: 'full'},
+	{ path: 'login', component: LoginComponent, pathMatch: 'full' },
+	{ path: 'request-password-reset', component: RequestResetPasswordComponent, pathMatch: 'full' },
+	{ path: 'reset-password', component: ResetPasswordComponent, pathMatch: 'full' },
 	{
 		path: '',
 		component: MainComponent,
-		canActivate: [ authGuard ],
+		canActivate: [authGuard],
 		children: [
-			{ path: '', redirectTo: '', pathMatch: 'full' },
-			{ path: 'dashboard', component: DashboardComponent,
-				data: { },
-			},
-			{ path: 'profile', component: ProfileComponent,
-				data: { },
+			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+			{
+				path: 'dashboard',
+				component: DashboardComponent,
+				data: {
+					title: '',
+					icon: 'pi pi-home'
+				}
 			},
 			{
-				path: 'inicio', title: 'Inicio', component: DashboardComponent,
-				data: { }
+				path: 'examples',
+				component: ExamplesComponent,
+				data: {
+					title: 'Examples',
+					icon: 'pi pi-users',
+					skipFromMenu: true
+				}
 			},
-			{ 
-				path: 'api-test', 
+			{
+				path: 'profile',
+				component: ProfileComponent,
+				data: { 
+					title: 'Profile',
+					icon: 'pi pi-user',
+					skipFromMenu: true
+				}
+			},
+			{
+				path: 'projects',
+				data: { 
+					title: 'Projects',
+					icon: 'pi pi-briefcase'
+				},
+				children: [
+					{
+						path: 'core',
+						component: DashboardComponent,
+						data: {
+							title: 'Core',
+							icon: 'pi pi-bolt'
+						}
+					},
+					{
+						path: 'blocks',
+						component: DashboardComponent,
+						data: {
+							title: 'Blocks',
+							icon: 'pi pi-cog'
+						}
+					},
+					{
+						path: 'ui-kit',
+						component: DashboardComponent,
+						data: { 
+							title: 'UI Kit',
+							icon: 'pi pi-palette'
+						}
+					},
+				]
+			},
+			{
+				path: 'api-test',
 				component: ApiTestComponent,
-				data: { title: 'Rick & Morty API Test' }
-			}
+				data: {
+					title: 'Rick & Morty API Test',
+					icon: 'pi pi-globe'
+				}
+			},
 		]
-	}   
+	}
 ];

@@ -1,17 +1,21 @@
-import { Component, OnInit, ViewChild, computed, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, computed } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { Router, RoutesRecognized } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Menubar } from 'primeng/menubar';
 import { BadgeModule } from 'primeng/badge';
 import { AvatarModule } from 'primeng/avatar';
 import { InputTextModule } from 'primeng/inputtext';
-import { CommonModule } from '@angular/common';
 import { Ripple } from 'primeng/ripple';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@services/auth/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { LayoutService } from '@src/app/services/layout.service';
-import { Popover } from 'primeng/popover';
 import { PopoverModule } from 'primeng/popover';
+import { Popover } from 'primeng/popover';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
 
 
 @Component({
@@ -21,51 +25,53 @@ import { PopoverModule } from 'primeng/popover';
     imports: [ 
         CommonModule, RouterModule, Menubar, BadgeModule, 
         AvatarModule, InputTextModule, Ripple, ButtonModule,
-        PopoverModule ]
+        PopoverModule, ConfirmPopupModule, ToastModule, DialogModule
+    ]
 })
 
 export class HeaderComponent implements OnInit {
-    items: MenuItem[] | undefined;
+    items: MenuItem[] = [];
     layoutService = inject(LayoutService);
-    authService = inject(AuthService)
+    authService = inject(AuthService);
+    router = inject(Router);
 
     @ViewChild('op') op!: Popover;
     
     isLoggedIn = computed(() => this.authService.isAuthenticated());
     isDarkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
+    userName = computed(() => this.authService.getUserFullName());
+    
+    displayConfirmation: boolean = false;
 
     ngOnInit() {
-        this.items = [
-            {
-                label: 'Home',
-                icon: 'pi pi-home',
-            },
-            {
-                label: 'Projects',
-                icon: 'pi pi-search',
-                badge: '3',
-                items: [
-                    {
-                        label: 'Core',
-                        icon: 'pi pi-bolt',
-                        shortcut: '⌘+S',
-                    },
-                    {
-                        label: 'Blocks',
-                        icon: 'pi pi-server',
-                        shortcut: '⌘+B',
-                    },
-                    {
-                        separator: true,
-                    },
-                    {
-                        label: 'UI Kit',
-                        icon: 'pi pi-pencil',
-                        shortcut: '⌘+U',
-                    },
-                ],
-            },
-        ];
+        this.generateMenu();
+        this.router.events.subscribe(event => {
+            if (event instanceof RoutesRecognized) {
+                this.generateMenu();
+            }
+        });
+    }
+
+    generateMenu() {
+        const routes = this.router.config.find(route => route.path === '')?.children || [];
+        this.items = this.buildMenu(routes);
+    }
+
+    buildMenu(routes: any[]): MenuItem[] {
+        return routes
+            .filter(route => route.data?.title || route.data?.icon)
+            .filter(route => !route.data.skipFromMenu)
+            .map(route => ({
+                title: route.data.title,
+                icon: route.data.icon || '',
+                routerLink: ['/', route.path],  // Changed to array format for proper routing
+                command: (event: any) => {
+                    if (!route.children) {
+                        this.router.navigate(['/', route.path]);
+                    }
+                },
+                items: route.children ? this.buildMenu(route.children) : undefined
+            }));
     }
 
     toggleDarkMode() {
@@ -73,15 +79,23 @@ export class HeaderComponent implements OnInit {
     }
 
     toggle(event: any) {
-        console.log("HOLA")
         this.op.toggle(event);
     }
 
-    userName() {
-        return this.authService.getCurrentUser()?.first_name || '';
+    goToProfile() {
+        this.router.navigate(['/profile'], { replaceUrl: true });
     }
 
     async requestLogout() {
+        this.closeLogoutConfirmation()
         await this.authService.logout();
+    }
+
+    openLogoutConfirmation() {
+        this.displayConfirmation = true;
+    }
+
+    closeLogoutConfirmation() {
+        this.displayConfirmation = false;
     }
 }

@@ -2,7 +2,14 @@
     <p-panel header="Panel 1" class="flex-1">
         <div class="card flex justify-center">
             
-            <p-button (onClick)="show()" label="Show" />
+            <p-button (onClick)="show()" label="Show" severity="primary" class="mr-2"/>
+            <p-button (onClick)="show()" label="Primary" severity="primary" class="mr-2"/>
+            <p-button (onClick)="show()" label="Secondary" severity="secondary" class="mr-2"/>
+            <p-button (onClick)="show()" label="Success" severity="success" class="mr-2"/>
+            <p-button (onClick)="show()" label="Info" severity="info" class="mr-2"/>
+            
+            <p-button (onClick)="show()" label="Help" severity="help" class="mr-2"/>
+            <p-button (onClick)="show()" label="Danger" severity="danger"/>
         </div>
     </p-panel>
 

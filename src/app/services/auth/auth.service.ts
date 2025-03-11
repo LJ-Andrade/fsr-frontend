@@ -23,6 +23,7 @@ interface User {
 	name: string;
 	first_name: string;
 	last_name: string;
+	roles: []
 }
 
 @Injectable({
@@ -113,8 +114,33 @@ export class AuthService {
 		});
 	}
 
-	getCurrentUser(): User | null | undefined {
-		return this.user().user;
+	retrieveLoggedUser(): Promise<AuthUser | null> {
+		return new Promise((resolve) => {
+			if (this.isAuthenticated() && this.user()?.user == null) {
+				this.dataService.httpFetch(environment.apiUrl + 'auth/me').subscribe({
+					next: (res: any) => {
+						this.user.set({ user: res.data });
+						console.log(res);
+						resolve(res.data);
+					},
+					error: () => {
+						this.user.set({ user: null });
+						resolve(null);
+					}
+				});
+			} else {
+				resolve(this.user()?.user || null);
+			}
+		});
+	}
+
+	getUserData(): User | null {
+		return this.user().user || null;
+	}
+
+	getUserFullName(): string {
+		const user = this.user().user;
+		return user ? `${user.first_name} ${user.last_name}` : '';
 	}
 
 

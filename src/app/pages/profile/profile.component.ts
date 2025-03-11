@@ -1,16 +1,19 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '@src/app/services/auth/auth.service';
+import { Component, computed, inject } from '@angular/core'
+import { AuthService } from '@src/app/services/auth/auth.service'
+import { BadgeModule } from 'primeng/badge'
+import { Card } from 'primeng/card'
+import { Divider } from 'primeng/divider';
 
-// import { PanelComponent } from '@src/app/elements/panel/panel.component';
 
 @Component({
 	selector: 'app-profile',
 	standalone: true,
-	// imports: [PanelComponent],
-	templateUrl: './profile.component.html',
-	styleUrl: './profile.component.sass'
+	imports: [ Card, BadgeModule, Divider ],
+	templateUrl: './profile.component.html'
 })
 
 export class ProfileComponent {
+	userData = computed(() => this.authService.getUserData());
+
 	authService = inject(AuthService);
 }
