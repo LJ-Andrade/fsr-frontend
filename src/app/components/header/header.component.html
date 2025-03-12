@@ -5,14 +5,15 @@
 		</ng-template>
 		<ng-template #item let-item let-root="root">
 			<a pRipple class="flex items-center p-menubar-item-link"
-			   [routerLink]="item.url"
+			   [routerLink]="item.routerLink"
+			   [routerLinkActive]="'active-menuitem'"
 			   [attr.href]="item.url || null"
 			   (click)="item.command && item.command($event, item)">
 				@if (item.icon) {
 					<i class="" [class]="item.icon"></i>
 				}
-				@if(item.title) {
-					<span>{{ item.title }}</span>
+				@if(item.label) {
+					<span>{{ item.label }}</span>
 				}
 				@if (item.badge) {
 					<p-badge [ngClass]="{ 'ml-auto': !root, 'ml-2': root, 'item-centered': true }" [value]="item.badge" />
@@ -24,9 +25,6 @@
 					<i [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i>
 				}
 			</a>
-			
-               
-		
 		</ng-template>
 		
 		<ng-template #end>

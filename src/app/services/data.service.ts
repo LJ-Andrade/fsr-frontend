@@ -1,7 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Pagination } from '../interfaces/results.interface';
 import { environment } from '@src/environments/environment';
 import { Observable } from 'rxjs';
+
 
 @Injectable({
     providedIn: 'root'
@@ -54,20 +56,20 @@ export class DataService {
 		return this.http.put<T>(url, body, options ?? this.defaultOptions);
 	}
 
-    // makePagination<T>(paginationData: Pagination<T>): any {
-	// 	return {
-	// 		current_page: paginationData.current_page,
-	// 		first_page_url: paginationData.first_page_url,
-	// 		from: paginationData.from,
-	// 		last_page: paginationData.last_page,
-	// 		last_page_url: paginationData.last_page_url,
-	// 		links: paginationData.links,
-	// 		next_page_url: paginationData.next_page_url,
-	// 		path: paginationData.path,
-	// 		per_page: paginationData.per_page,
-	// 		prev_page_url: paginationData.prev_page_url,
-	// 		to: paginationData.to,
-	// 		total: paginationData.total
-	// 	};
-	// }
+    makePagination<T>(paginationData: Pagination<T>): any {
+		return {
+			current_page: paginationData.current_page,
+			first_page_url: paginationData.first_page_url,
+			from: paginationData.from,
+			last_page: paginationData.last_page,
+			last_page_url: paginationData.last_page_url,
+			links: paginationData.links,
+			next_page_url: paginationData.next_page_url,
+			path: paginationData.path,
+			per_page: paginationData.per_page,
+			prev_page_url: paginationData.prev_page_url,
+			to: paginationData.to,
+			total: paginationData.total
+		};
+	}
 }

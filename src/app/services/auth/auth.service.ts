@@ -120,7 +120,6 @@ export class AuthService {
 				this.dataService.httpFetch(environment.apiUrl + 'auth/me').subscribe({
 					next: (res: any) => {
 						this.user.set({ user: res.data });
-						console.log(res);
 						resolve(res.data);
 					},
 					error: () => {
@@ -149,7 +148,6 @@ export class AuthService {
 		this.notificationService.info('Cerrando sesión...', '');
 		this.dataService.httpPost(environment.apiUrl + 'auth/logout', {}).subscribe({
 			next: (res: any) => {
-				console.log(res);
 				if (res.status || res.message == 'Success') {
 					localStorage.removeItem(environment.tokenKeyName);
 					location.reload();

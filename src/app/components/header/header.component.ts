@@ -17,7 +17,6 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 
-
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
@@ -54,24 +53,28 @@ export class HeaderComponent implements OnInit {
 
     generateMenu() {
         const routes = this.router.config.find(route => route.path === '')?.children || [];
-        this.items = this.buildMenu(routes);
+        this.items = this.buildMenu(routes, '');
     }
 
-    buildMenu(routes: any[]): MenuItem[] {
+    buildMenu(routes: any[], parentPath: string): MenuItem[] {
         return routes
             .filter(route => route.data?.title || route.data?.icon)
-            .filter(route => !route.data.skipFromMenu)
-            .map(route => ({
-                title: route.data.title,
-                icon: route.data.icon || '',
-                routerLink: ['/', route.path],  // Changed to array format for proper routing
-                command: (event: any) => {
-                    if (!route.children) {
-                        this.router.navigate(['/', route.path]);
-                    }
-                },
-                items: route.children ? this.buildMenu(route.children) : undefined
-            }));
+            .filter(route => !route.data?.skipFromMenu)
+            .map(route => {
+                const currentPath = parentPath ? `${parentPath}/${route.path}` : route.path;
+                
+                const menuItem: MenuItem = {
+                    label: route.data?.title, // Cambiar de title a label para MenuItem
+                    icon: route.data?.icon || '',
+                    routerLink: currentPath
+                };
+                
+                if (route.children) {
+                    menuItem.items = this.buildMenu(route.children, currentPath);
+                }
+                
+                return menuItem;
+            });
     }
 
     toggleDarkMode() {
@@ -83,7 +86,7 @@ export class HeaderComponent implements OnInit {
     }
 
     goToProfile() {
-        this.router.navigate(['/profile'], { replaceUrl: true });
+        this.router.navigate(['/profile']);
     }
 
     async requestLogout() {

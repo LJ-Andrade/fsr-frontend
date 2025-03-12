@@ -8,6 +8,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import DashboardComponent from './pages/dashboard/dashboard.component';
 import { ApiTestComponent } from './pages/api-test/api-test.component';
 import { ExamplesComponent } from './pages/examples/examples.component';
+import { UsersComponent } from './pages/users/users.component';
 
 /**
  * App routes
@@ -53,36 +54,20 @@ export const routes: Routes = [
 				}
 			},
 			{
-				path: 'projects',
+				path: 'settings',
 				data: { 
-					title: 'Projects',
+					title: 'Settings',
 					icon: 'pi pi-briefcase'
 				},
 				children: [
 					{
-						path: 'core',
-						component: DashboardComponent,
+						path: 'users',
+						component: UsersComponent,
 						data: {
-							title: 'Core',
-							icon: 'pi pi-bolt'
+							title: 'Users',
+							icon: 'pi pi-users'
 						}
-					},
-					{
-						path: 'blocks',
-						component: DashboardComponent,
-						data: {
-							title: 'Blocks',
-							icon: 'pi pi-cog'
-						}
-					},
-					{
-						path: 'ui-kit',
-						component: DashboardComponent,
-						data: { 
-							title: 'UI Kit',
-							icon: 'pi pi-palette'
-						}
-					},
+					}
 				]
 			},
 			{

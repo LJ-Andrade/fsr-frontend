@@ -1,0 +1,43 @@
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" class="checkbox-col">
+            <p-checkbox #mainCheckbox [binary]="true"
+                (change)="toggleAllRows($event)">
+            </p-checkbox>
+        </th>
+        @for(column of tableData; track $index) {
+            @if(!column.hidden && !column.hideOnList) {
+                <th scope="col">
+                    {{ column.text }}
+                </th>
+            }
+         }
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+        @for(row of results(); track row; let odd = $odd) {
+            <tr class="table-row" [class.odd]="odd" [ngClass]="{ 'row-selected': row.selected } ">
+                <td class="checkbox-col">
+                    <p-checkbox [(ngModel)]="checked" [binary]="true"></p-checkbox>
+                </td>
+                @for(item of tableData; track $index; let odd = $odd) {
+                    @if(!item.hidden && !item.hideOnList) {
+                        <td [ngClass]="item['columnClass']">
+                            {{ row[item.name] }}
+                        </td>
+                    }
+                }
+                <td class="action-column">
+                    <p-button styleClass="mr-3 small-action-button" icon="pi pi-pencil" [rounded]="true" [text]="true" [raised]="true" size="small" />
+                    
+                    <p-button styleClass="small-action-button" icon="pi pi-trash" [rounded]="true" [text]="true" [raised]="true" severity="danger" size="small" />
+                </td>
+            </tr>
+        }
+      
+    </tbody>
+  </table>
+</div>
