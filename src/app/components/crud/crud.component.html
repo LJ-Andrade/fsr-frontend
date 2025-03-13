@@ -1,43 +1,134 @@
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col" class="checkbox-col">
-            <p-checkbox #mainCheckbox [binary]="true"
-                (change)="toggleAllRows($event)">
-            </p-checkbox>
-        </th>
-        @for(column of tableData; track $index) {
-            @if(!column.hidden && !column.hideOnList) {
-                <th scope="col">
-                    {{ column.text }}
-                </th>
-            }
-         }
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-        @for(row of results(); track row; let odd = $odd) {
-            <tr class="table-row" [class.odd]="odd" [ngClass]="{ 'row-selected': row.selected } ">
-                <td class="checkbox-col">
-                    <p-checkbox [(ngModel)]="checked" [binary]="true"></p-checkbox>
-                </td>
-                @for(item of tableData; track $index; let odd = $odd) {
-                    @if(!item.hidden && !item.hideOnList) {
-                        <td [ngClass]="item['columnClass']">
-                            {{ row[item.name] }}
-                        </td>
-                    }
-                }
-                <td class="action-column">
-                    <p-button styleClass="mr-3 small-action-button" icon="pi pi-pencil" [rounded]="true" [text]="true" [raised]="true" size="small" />
-                    
-                    <p-button styleClass="small-action-button" icon="pi pi-trash" [rounded]="true" [text]="true" [raised]="true" severity="danger" size="small" />
-                </td>
-            </tr>
-        }
-      
-    </tbody>
-  </table>
-</div>
+
+<h1>{{ sectionConfig.namePlural | titlecase }}</h1>
+<p-toolbar styleClass="mb-6">
+	<ng-template #start>
+		@if(!creationFormVisible) {
+			<p-button label="New" icon="pi pi-plus" class="mr-2"
+				(onClick)="toggleCreationForm()" />
+		} @else {
+			<p-button label="List" icon="pi pi-list" class="mr-2"
+				(onClick)="toggleCreationForm()" />
+		}
+		<p-button severity="danger" label="Delete" icon="pi pi-trash" outlined />
+	</ng-template>
+
+	<ng-template #end>
+		<p-button label="Export" icon="pi pi-upload" severity="secondary" />
+	</ng-template>
+</p-toolbar>
+
+@if(creationFormVisible) {
+	<h2>Creating {{ sectionConfig.nameSingular }}</h2>
+	<form mainForm class="form-group main-form" [formGroup]="sectionForm">
+		@for(field of formFields; track $index) {
+			<div [class]="field.cols" [ngClass]="{ 'Hidden': field.hidden }">
+				@switch (field.type) {
+
+
+					@case('text') {
+						<label [for]="field.name">{{ field.label }}</label>
+						<input [formControlName]="field.name" class="form-control"
+						[placeholder]="field.placeholder" text="text"
+						/>
+						<app-field-error [field]="sectionForm.get(field.name)"/>
+					}
+
+					@case('email') {
+						<label [for]="field.name">{{ field.label }}</label>
+						<input [formControlName]="field.name" class="form-control"
+						[placeholder]="field.placeholder" text="email"
+						/>
+						<app-field-error [field]="sectionForm.get(field.name)"/>
+					}
+
+					@case('select') {
+						<label [for]="field.name">{{ field.label }}</label>
+						<select [formControlName]="field.name" class="form-select" title="Seleccionar...">
+							<option value="null" disabled>{{ field.placeholder }}</option>
+							@for(option of field.options; track $index) {
+								@if(field.useValueAsKey != undefined && field.useValueAsKey) {
+									<option [value]="option.value" [selected]="option.key == field.value">{{ option.value }}</option>
+								} @else {
+									<option [value]="option.key" [selected]="option.key == field.value">{{ option.value }}</option>
+								}
+							}
+						</select>
+						<app-field-error [field]="sectionForm.get(field.name)"/>
+					}
+
+				
+
+					@case('textarea') {
+
+						<label [for]="field.name">{{ field.label }}</label>
+						<textarea [formControlName]="field.name" class="form-control"
+						[placeholder]="field.placeholder"></textarea>
+						<app-field-error [field]="sectionForm.get(field.name)"/>
+
+					}
+
+					@default {
+						No input
+					}
+				}
+			</div>
+		}
+		<p-button label="Save" icon="pi pi-check" (onClick)="submitForm()" severity="success" [loading]="loading"></p-button>
+
+
+
+	</form>
+} @else {
+	<div class="table-responsive">
+		@if(!crudService.loading()){
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col" class="checkbox-col">
+							<p-checkbox #mainCheckbox [binary]="true"
+								(change)="toggleAllRows($event)">
+							</p-checkbox>
+						</th>
+						@for(column of listData; track $index) {
+						@if(!column.hidden && !column.hideOnList) {
+						<th scope="col">
+							{{ column.text }}
+						</th>
+						}
+						}
+						<th scope="col"></th>
+					</tr>
+				</thead>
+				<tbody>
+	
+					@for(row of crudService.results(); track row; let odd = $odd) {
+					<tr class="table-row" [class.odd]="odd"
+						[ngClass]="{ 'row-selected': row.selected } ">
+						<td class="checkbox-col">
+							<p-checkbox [(ngModel)]="checked" [binary]="true"></p-checkbox>
+						</td>
+						@for(item of listData; track $index; let odd = $odd) {
+						@if(!item.hidden && !item.hideOnList) {
+						<td [ngClass]="item['columnClass']">
+							{{ row[item.name] }}
+						</td>
+						}
+						}
+						<td class="action-column">
+							<p-button styleClass="mr-3 small-action-button" icon="pi pi-pencil"
+								[rounded]="true" [text]="true" [raised]="true" size="small" />
+	
+							<p-button styleClass="small-action-button" icon="pi pi-trash"
+								[rounded]="true" [text]="true" [raised]="true" severity="danger"
+								size="small" />
+						</td>
+					</tr>
+					}
+	
+				</tbody>
+			</table>
+		} @else {
+			<app-skeleton [rowsAmount]="5"></app-skeleton>
+		}
+	</div>
+}

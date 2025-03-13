@@ -1,17 +1,19 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges,  SimpleChanges, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule, } from '@angular/common';
-import { FormGroup, FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { Results } from '@src/app/interfaces/results.interface';
-import { DataService } from '@src/app/services/data.service';
-import { Data } from '@angular/router';
+import { SkeletonComponent } from "../skeleton/skeleton.component";
+import { ToolbarModule } from 'primeng/toolbar';
+import { CrudService } from '@src/app/services/crud/crud.service';
 import { environment } from '@src/environments/environment.development';
+import { FieldErrorComponent } from '../field-error/field-error.component';
+
+// type ServiceActions = 'create' | 'edit' | 'delete' | 'batch-delete' | 'show' | null
+type FormState = 'IDLE' | 'SUCCESS' | 'ERROR'
 
 
-type ServiceActions = 'create' | 'edit' | 'delete' | 'batch-delete' | 'show' | null
-
-export interface TableData {
+export interface ListData {
 	name: string;
 	text: string;
 	valueClass?: string;
@@ -29,7 +31,7 @@ export interface TableData {
 	hideOnShow?: boolean;
 	fieldType?: string;
 	columnClass?: string;
-	relationFields?: TableData[];
+	relationFields?: ListData[];
 	limitText?: number;
 }
 
@@ -44,73 +46,110 @@ export interface SectionConfig {
 @Component({
 	selector: 'app-crud',
 	standalone: true,
-	imports: [ CommonModule, FormsModule, ButtonModule, CheckboxModule ],
+	imports: [
+		CommonModule, FormsModule, ReactiveFormsModule, ButtonModule, CheckboxModule, 
+		ToolbarModule, SkeletonComponent, FieldErrorComponent ],
 	templateUrl: './crud.component.html'
 })
 
 
 export class CrudComponent implements OnChanges {
     
-    dataService: DataService = inject(DataService);
-    
-    #state = signal<Results<any>>({
-		loading: true,
-		results: [],
-		pagination: undefined,
-		error: ''
-	})
-    
-    public results = computed(() => this.#state().results)
-	public pagination = computed(() => this.#state().pagination)
-	public loading = computed(() => this.#state().loading)
-	public error = computed(() => this.#state().error)
+	crudService: CrudService = inject(CrudService);
 	// public softLoading = computed(() => this.#softLoading())
 
-    @Input() tableData: TableData[] = [];
+    @ViewChild('mainCheckbox') mainCheckbox!: ElementRef;
+
+    @Input() listData: ListData[] = [];
 	@Input() sectionConfig: SectionConfig = { model: 'Default', visualId: 'name', nameSingular: 'Default', namePlural: 'Default' };
-	@Input() sectionForm: FormGroup = new FormGroup({});
+	@Input() formFields: any[] = []
 	@Input() formData: any = {};
     
-    @ViewChild('mainCheckbox') mainCheckbox!: ElementRef;
-    checked: boolean = false;
+	sectionForm = new FormGroup({});
+	formState: FormState = 'IDLE'
+	loading: boolean = false
 
     selectedRows = signal<any[]>([]);
-    data: any[] = [];
+    // data: any[] = [];
+	
+    checked: boolean = false;
+	creationFormVisible: boolean = false;
 
     ngOnInit() {
-        this.read(this.sectionConfig.model)
+        this.crudService.read(this.sectionConfig.model)
+		this.buildSectionForm()
     }
 
     ngOnChanges(changes: SimpleChanges) {
 		
 	}
 
-    public read(modelName: string, url: string | null = null) {
-		if (!url)
-			url = `${environment.apiUrl}`+modelName
+	buildSectionForm() {
+		this.sectionForm = new FormGroup({});
 
-		// this.#state.set({loading: true, results: this.results(), pagination: this.pagination(), error: ''})
-		// this.#softLoading.set(true);
+		this.formFields.forEach(field => {
+			this.sectionForm.addControl(
+				field.name,
+				new FormControl(null, field.validators))
 
-		this.dataService.httpFetch(url)
-			.subscribe({
-				next: (res: any) => {
-					this.#state.set({
-						loading: false,
-						results: res.data,
-						pagination: this.dataService.makePagination(res.meta),
-						error: ''
-					})
-                    console.log(this.#state())
-				},
-				error: (error: any) => {
-					console.log("Error on users ", error)
-				},
-				complete: () => {
-					// this.#softLoading.set(false);
-				}
-			});
+			if (field.value)
+				this.sectionForm.get(field.name)?.setValue(field.value)
+		});
 	}
+
+
+	submitForm() {
+
+		// console.log("Sending data: ", this.formGroup.value)
+
+		if(this.validateForm()) {
+			this.loading = true
+
+			this.crudService.dataService.httpPost(environment.apiUrl + this.sectionConfig.model,
+			this.buildFormData(this.sectionForm.value))
+			.subscribe({
+
+				next: (res: any) => {
+					this.formState = 'SUCCESS'
+					console.log(res)
+					// if(res.result){
+					// 	this.formState = 'SUCCESS'
+					// } else {
+					// 	this.formState = 'ERROR'
+					// 	console.log(res)
+					// }
+				},
+				error: (err: any) => {
+					console.log(err)
+					this.formState = 'ERROR'
+				}
+			})
+		}
+	}
+
+
+	buildFormData(data: any): FormData {
+		let formData = new FormData();
+
+		for(let key in data) {
+			formData.append(key, data[key])
+		}
+
+		return formData
+	}
+
+	validateForm(): boolean {
+		if (!this.sectionForm.valid) {
+			this.sectionForm.markAllAsTouched();
+			console.log("Error on form ", this.sectionForm)
+			return false
+		} else {
+			return true
+		}
+	}
+
+
+
     
     toggleAllRows(event: any): void {
 
@@ -128,13 +167,29 @@ export class CrudComponent implements OnChanges {
 		// this.updateSelected()
 	}
 
+//#region  Row Selection
+	toggleCreationForm(): void {
+		this.creationFormVisible = !this.creationFormVisible;
+
+		if(!this.creationFormVisible) {
+			this.clearCreationForm();
+		}
+	}
+
+	clearCreationForm(): void {
+		this.sectionForm.reset();
+	}
+
+//#endregion
+
+
     deselectAllRows(): void {
 
-		this.data.forEach(row => {
-			row.selected = false;
-		});
+		// this.data.forEach(row => {
+		// 	row.selected = false;
+		// });
 
-		this.selectedRows.set([]);
+		// this.selectedRows.set([]);
 	}
 
 }

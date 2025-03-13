@@ -57,7 +57,8 @@ export const routes: Routes = [
 				path: 'settings',
 				data: { 
 					title: 'Settings',
-					icon: 'pi pi-briefcase'
+					icon: 'pi pi-briefcase',
+					noRedirect: true
 				},
 				children: [
 					{

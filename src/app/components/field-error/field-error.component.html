@@ -1,0 +1,5 @@
+<div class="field-error-container">
+    <div class="field-error" [ngClass]="{ 'show': field.invalid && field.touched || debugShow}">
+        {{ getText( field?.errors ) }}
+    </div>
+</div>

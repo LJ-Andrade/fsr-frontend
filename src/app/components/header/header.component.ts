@@ -61,16 +61,24 @@ export class HeaderComponent implements OnInit {
             .filter(route => route.data?.title || route.data?.icon)
             .filter(route => !route.data?.skipFromMenu)
             .map(route => {
-                const currentPath = parentPath ? `${parentPath}/${route.path}` : route.path;
+                let currentPath: string;
+                let pathForChildren = parentPath;
                 
+                // Calculate the current path regardless of whether it will be used for routing
+                currentPath = parentPath ? `${parentPath}/${route.path}` : route.path;
+                pathForChildren = currentPath; // Save the path for children
+
+                // Determine if this item should have a routerLink
+                const shouldHaveLink = !(route.data?.noRedirect || route.children?.length > 0);
+
                 const menuItem: MenuItem = {
-                    label: route.data?.title, // Cambiar de title a label para MenuItem
+                    label: route.data?.title,
                     icon: route.data?.icon || '',
-                    routerLink: currentPath
+                    routerLink: shouldHaveLink ? currentPath : undefined
                 };
                 
                 if (route.children) {
-                    menuItem.items = this.buildMenu(route.children, currentPath);
+                    menuItem.items = this.buildMenu(route.children, pathForChildren);
                 }
                 
                 return menuItem;

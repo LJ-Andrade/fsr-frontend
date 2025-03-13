@@ -9,6 +9,7 @@
 			   [routerLinkActive]="'active-menuitem'"
 			   [attr.href]="item.url || null"
 			   (click)="item.command && item.command($event, item)">
+			   
 				@if (item.icon) {
 					<i class="" [class]="item.icon"></i>
 				}
