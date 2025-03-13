@@ -21,11 +21,9 @@ import { Observable, of } from 'rxjs';
 
 export class CrudService extends DataService  {
 
-	notificationService = inject(NotificationService);
-
-
+	notificationService: NotificationService = inject(NotificationService);
 	dataService: DataService = inject(DataService);
-    
+
     #state = signal<Results<any>>({
 		loading: true,
 		results: [],
@@ -66,75 +64,59 @@ export class CrudService extends DataService  {
 	}
     
 	
-	// #softLoading = signal<boolean>(false);
-
-	// #state = signal<Results<any>>({
-	// 	loading: true,
-	// 	results: [],
-	// 	pagination: undefined,
-	// 	error: ''
-	// })
-
-	// public results = computed(() => this.#state().results)
-	// public pagination = computed(() => this.#state().pagination)
-	// public loading = computed(() => this.#state().loading)
-	// public error = computed(() => this.#state().error)
-	// public softLoading = computed(() => this.#softLoading())
-
-	// clearData() {
-	// 	this.#state.set({loading: true, results: [], pagination: undefined, error: ''})
-	// }
-
-	// public fetch(modelName: string, url: string | null = null) {
-	// 	if (!url)
-	// 		url = `${environment.apiUrl}`+modelName
-
-	// 	// this.#state.set({loading: true, results: this.results(), pagination: this.pagination(), error: ''})
-	// 	this.#softLoading.set(true);
-
-	// 	this.httpFetch(url)
-	// 		.subscribe({
-	// 			next: (res: any) => {
-	// 				this.#state.set({
-	// 					loading: false,
-	// 					results: res.data,
-	// 					pagination: this.makePagination(res),
-	// 					error: ''
-	// 				})
-	// 			},
-	// 			error: (error: any) => {
-	// 				console.log("Error on users ", error)
-	// 			},
-	// 			complete: () => {
-	// 				this.#softLoading.set(false);
-	// 			}
-	// 		});
-	// }
 
 
-	// save(data: any, model: string): Observable<any>  {
+	save(data: any, model: string): Observable<any>  {
 
-	// 	this.#softLoading.set(true);
 
-	// 	let formData = this.getFormData(data)
+		let formData = this.getFormData(data)
+		console.log(formData)
 
-	// 	return new Observable(observer => {
-	// 		this.httpPost(`${environment.apiUrl+model}`, formData).subscribe({
-	// 			next: (res: any) => {
-	// 				observer.next(res);
-	// 			},
-	// 			error: (error: any) => {
-	// 				console.log("Error on crudService ", error);
-	// 				observer.error(error);
-	// 			},
-	// 			complete: () => {
-	// 				observer.complete();
-	// 				this.#softLoading.set(false);
-	// 			}
-	// 		});
-	// 	});
-	// }
+		return new Observable(observer => {
+			this.httpPost(`${environment.apiUrl+model}`, formData).subscribe({
+				next: (res: any) => {
+					observer.next(res);
+					console.log(res)
+				},
+				error: (error: any) => {
+					console.log("Error on crudService ", error);
+					observer.error(error);
+				},
+				complete: () => {
+					observer.complete();
+					console.log('completed')
+				}
+			});
+		});
+	}
 
+
+	getFormData(data: any, isEdit: boolean = false): any {
+
+		let formData = new FormData();
+
+		if (data == undefined) {
+			console.error("Data is undefined on save method.")
+			return formData
+		}
+
+		for(let key in data) {
+			let value = data[key]
+
+			if (Array.isArray(value)) {
+				formData.append(key, JSON.stringify(data[key]))
+			} else {
+				formData.append(key, value);
+			}
+
+		}
+
+		if(isEdit) {
+			formData.append('_method', 'PUT')
+		}
+
+		return formData
+	}
 
 
 	// edit(data: any, model: string): Observable<any> {
@@ -212,32 +194,6 @@ export class CrudService extends DataService  {
 
 	// }
 
-	// getFormData(data: any, isEdit: boolean = false): any {
-
-	// 	let formData = new FormData();
-
-	// 	if (data == undefined) {
-	// 		console.error("Data is undefined on save method.")
-	// 		return formData
-	// 	}
-
-	// 	for(let key in data) {
-	// 		let value = data[key]
-
-	// 		if (Array.isArray(value)) {
-	// 			formData.append(key, JSON.stringify(data[key]))
-	// 		} else {
-	// 			formData.append(key, value);
-	// 		}
-
-	// 	}
-
-	// 	if(isEdit) {
-	// 		formData.append('_method', 'PUT')
-	// 	}
-
-	// 	return formData
-	// }
 
 	// ngOnDestroy() {
 	// 	console.log("Destroying crud service")

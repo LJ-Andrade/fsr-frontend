@@ -1,15 +1,17 @@
 <div class="card">
 	<p-menubar [model]="items">
+		<!-- App Logo -->
 		<ng-template #start>
 			LOGO
 		</ng-template>
+
+		<!-- Menu Items -->
 		<ng-template #item let-item let-root="root">
 			<a pRipple class="flex items-center p-menubar-item-link"
 			   [routerLink]="item.routerLink"
 			   [routerLinkActive]="'active-menuitem'"
 			   [attr.href]="item.url || null"
 			   (click)="item.command && item.command($event, item)">
-			   
 				@if (item.icon) {
 					<i class="" [class]="item.icon"></i>
 				}
@@ -28,19 +30,22 @@
 			</a>
 		</ng-template>
 		
+		<!-- Header right container -->
 		<ng-template #end>
 			<div class="flex items-center gap-2">
 				
+				<!-- Profile Button -->
 				<div class="c-dropdown flex items-center" (click)="toggle($event)">
-					<div class="gap-2 mr-3">
-						<p>{{ userName() }}</p>
+					<div class="text-center gap-2 mr-3">
+						<p>{{ this.userData()?.last_name }}, {{ this.userData()?.first_name }}</p>
+						<span class="text-xs">{{ this.userData()?.email }}</span>
 					</div>
 					<div class="round-empty-button">
 						<img src="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" class="w-4 h-4 rounded-full" />
 					</div>
-					
 				</div>
 
+				<!-- Logged User Actions -->
 				<p-popover #op>
 					<div class="flex flex-col gap-4">
 						<div>
@@ -57,8 +62,8 @@
 								<li class="flex hover:bg-emphasis cursor-pointer rounded-border gap-2 px-2 py-3 ">
 									<p-button
 										[styleClass]="'full-width-button'"
-										[label]="isDarkTheme()? 'Dark Mode' : 'Light Mode'"
-										[icon]="isDarkTheme() ? 'pi pi-moon' : 'pi pi-sun'"
+										[label]="isDarkTheme()? 'Light Mode' : 'Dark Mode' "
+										[icon]="isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"
 										variant="text" severity="secondary"
 										(onClick)="toggleDarkMode()"
 									/>
@@ -72,13 +77,13 @@
 										variant="text" severity="secondary"
 										(click)="openLogoutConfirmation()"
 										/>
-										<!-- (click)="requestLogout()" -->
 								</li>
 							</ul>
 						</div>
 					</div>
 				</p-popover>
 				
+				<!-- Logout Button -->
 				<p-dialog header="Do you want to logout?" [(visible)]="displayConfirmation" [style]="{ width: '350px' }" [modal]="true">
                     <div class="flex items-center justify-center">
                         <i class="pi pi-exclamation-triangle mr-4" style="font-size: 2rem"> </i>

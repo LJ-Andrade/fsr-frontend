@@ -3,13 +3,13 @@
 <p-toolbar styleClass="mb-6">
 	<ng-template #start>
 		@if(!creationFormVisible) {
-			<p-button label="New" icon="pi pi-plus" class="mr-2"
+			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
 				(onClick)="toggleCreationForm()" />
 		} @else {
 			<p-button label="List" icon="pi pi-list" class="mr-2"
 				(onClick)="toggleCreationForm()" />
 		}
-		<p-button severity="danger" label="Delete" icon="pi pi-trash" outlined />
+		<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined />
 	</ng-template>
 
 	<ng-template #end>

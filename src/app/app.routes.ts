@@ -9,6 +9,7 @@ import DashboardComponent from './pages/dashboard/dashboard.component';
 import { ApiTestComponent } from './pages/api-test/api-test.component';
 import { ExamplesComponent } from './pages/examples/examples.component';
 import { UsersComponent } from './pages/users/users.component';
+import { RolesComponent } from './pages/roles/roles.component';
 
 /**
  * App routes
@@ -68,17 +69,17 @@ export const routes: Routes = [
 							title: 'Users',
 							icon: 'pi pi-users'
 						}
-					}
+					},
+					{
+						path: 'roles',
+						component: RolesComponent,
+						data: {
+							title: 'Roles',
+							icon: 'pi pi-user'
+						}
+					},
 				]
-			},
-			{
-				path: 'api-test',
-				component: ApiTestComponent,
-				data: {
-					title: 'Rick & Morty API Test',
-					icon: 'pi pi-globe'
-				}
-			},
+			}
 		]
 	}
 ];

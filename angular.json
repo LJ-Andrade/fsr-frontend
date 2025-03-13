@@ -29,6 +29,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets/"
               }
             ],
             "styles": [
@@ -37,7 +42,7 @@
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["src/styles"]
+              "includePaths": ["src/styles", "src/assets/styles"]
             }
           },
           "configurations": {
@@ -80,7 +85,8 @@
             },
             "development": {
               "buildTarget": "frontend:build:development",
-              "poll": 2000
+              "poll": 2000,
+              "hmr": true
             }
           },
           "defaultConfiguration": "development"
@@ -101,6 +107,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets/"
               }
             ],
             "styles": [

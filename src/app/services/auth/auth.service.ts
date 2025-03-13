@@ -142,6 +142,11 @@ export class AuthService {
 		return user ? `${user.first_name} ${user.last_name}` : '';
 	}
 
+	getUserEmail(): string {
+		const user = this.user().user;
+		return user? user.email : '';
+	}
+
 
 	logout() {
 

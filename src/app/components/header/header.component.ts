@@ -38,17 +38,21 @@ export class HeaderComponent implements OnInit {
     
     isLoggedIn = computed(() => this.authService.isAuthenticated());
     isDarkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
-    userName = computed(() => this.authService.getUserFullName());
+    
+    userData = computed(() => this.authService.getUserData());
     
     displayConfirmation: boolean = false;
 
     ngOnInit() {
         this.generateMenu();
+        
+        // Subscribe to router events to regenerate menu when routes change
         this.router.events.subscribe(event => {
             if (event instanceof RoutesRecognized) {
                 this.generateMenu();
             }
         });
+
     }
 
     generateMenu() {

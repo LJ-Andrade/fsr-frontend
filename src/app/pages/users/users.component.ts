@@ -14,7 +14,6 @@ export class UsersComponent {
 
     sectionConfig: SectionConfig = {
 		model: 'users',
-		visualId: 'name',
 		nameSingular: 'user',
 		namePlural: 'users'
 	}

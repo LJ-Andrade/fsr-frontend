@@ -37,7 +37,6 @@ export interface ListData {
 
 export interface SectionConfig {
 	model: string;
-	visualId: string,
 	nameSingular: string;
 	namePlural: string;
 }
@@ -61,7 +60,7 @@ export class CrudComponent implements OnChanges {
     @ViewChild('mainCheckbox') mainCheckbox!: ElementRef;
 
     @Input() listData: ListData[] = [];
-	@Input() sectionConfig: SectionConfig = { model: 'Default', visualId: 'name', nameSingular: 'Default', namePlural: 'Default' };
+	@Input() sectionConfig: SectionConfig = { model: 'Default', nameSingular: 'Default', namePlural: 'Default' };
 	@Input() formFields: any[] = []
 	@Input() formData: any = {};
     
@@ -99,32 +98,35 @@ export class CrudComponent implements OnChanges {
 
 
 	submitForm() {
+		console.log('Submitting form')
+		this.crudService.save(this.sectionForm.value, this.sectionConfig.model)
 
-		// console.log("Sending data: ", this.formGroup.value)
+		// if(this.validateForm()) {
+		// 	this.loading = true
 
-		if(this.validateForm()) {
-			this.loading = true
+		// 	console.log(this.buildFormData(this.sectionForm.value))
+		// 	this.crudService.dataService.httpPost(environment.apiUrl + this.sectionConfig.model,
+		// 	this.buildFormData(this.sectionForm.value))
+		// 	.subscribe({
 
-			this.crudService.dataService.httpPost(environment.apiUrl + this.sectionConfig.model,
-			this.buildFormData(this.sectionForm.value))
-			.subscribe({
-
-				next: (res: any) => {
-					this.formState = 'SUCCESS'
-					console.log(res)
-					// if(res.result){
-					// 	this.formState = 'SUCCESS'
-					// } else {
-					// 	this.formState = 'ERROR'
-					// 	console.log(res)
-					// }
-				},
-				error: (err: any) => {
-					console.log(err)
-					this.formState = 'ERROR'
-				}
-			})
-		}
+		// 		next: (res: any) => {
+		// 			this.formState = 'SUCCESS'
+		// 			console.log(res)
+		// 			// if(res.result){
+		// 			// 	this.formState = 'SUCCESS'
+		// 			// } else {
+		// 			// 	this.formState = 'ERROR'
+		// 			// 	console.log(res)
+		// 			// }
+		// 		},
+		// 		error: (err: any) => {
+		// 			console.log(err)
+		// 			this.formState = 'ERROR'
+		// 			this.loading = false
+		// 			this.crudService.notificationService.error('Error creating ' + this.sectionConfig.nameSingular, err.error.message)
+		// 		}
+		// 	})
+		// }
 	}
 
 
