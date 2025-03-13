@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges,  SimpleChanges, ViewChild, inject, signal } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges,  SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -6,12 +6,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { SkeletonComponent } from "../skeleton/skeleton.component";
 import { ToolbarModule } from 'primeng/toolbar';
 import { CrudService } from '@src/app/services/crud/crud.service';
-import { environment } from '@src/environments/environment.development';
 import { FieldErrorComponent } from '../field-error/field-error.component';
 
-// type ServiceActions = 'create' | 'edit' | 'delete' | 'batch-delete' | 'show' | null
 type FormState = 'IDLE' | 'SUCCESS' | 'ERROR'
-
 
 export interface ListData {
 	name: string;
@@ -41,7 +38,6 @@ export interface SectionConfig {
 	namePlural: string;
 }
 
-
 @Component({
 	selector: 'app-crud',
 	standalone: true,
@@ -51,25 +47,25 @@ export interface SectionConfig {
 	templateUrl: './crud.component.html'
 })
 
-
 export class CrudComponent implements OnChanges {
     
 	crudService: CrudService = inject(CrudService);
-	// public softLoading = computed(() => this.#softLoading())
-
-    @ViewChild('mainCheckbox') mainCheckbox!: ElementRef;
-
-    @Input() listData: ListData[] = [];
+    
+	@Input() listData: ListData[] = [];
 	@Input() sectionConfig: SectionConfig = { model: 'Default', nameSingular: 'Default', namePlural: 'Default' };
 	@Input() formFields: any[] = []
 	@Input() formData: any = {};
-    
+	
+    @ViewChild('mainCheckbox') mainCheckbox!: ElementRef;
+
 	sectionForm = new FormGroup({});
 	formState: FormState = 'IDLE'
 	loading: boolean = false
 
-    selectedRows = signal<any[]>([]);
-    // data: any[] = [];
+	selectedRows = signal<any[]>([]);
+	selectedRowsCount = computed(() => this.selectedRows().length);
+	activeData: any = {}
+	data: any[] = [];
 	
     checked: boolean = false;
 	creationFormVisible: boolean = false;
@@ -82,6 +78,8 @@ export class CrudComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
 		
 	}
+
+//#region Forms
 
 	buildSectionForm() {
 		this.sectionForm = new FormGroup({});
@@ -96,39 +94,30 @@ export class CrudComponent implements OnChanges {
 		});
 	}
 
-
 	submitForm() {
-		console.log('Submitting form')
-		this.crudService.save(this.sectionForm.value, this.sectionConfig.model)
+		if(!this.validateForm()) {
+			return
+		}
 
-		// if(this.validateForm()) {
-		// 	this.loading = true
-
-		// 	console.log(this.buildFormData(this.sectionForm.value))
-		// 	this.crudService.dataService.httpPost(environment.apiUrl + this.sectionConfig.model,
-		// 	this.buildFormData(this.sectionForm.value))
-		// 	.subscribe({
-
-		// 		next: (res: any) => {
-		// 			this.formState = 'SUCCESS'
-		// 			console.log(res)
-		// 			// if(res.result){
-		// 			// 	this.formState = 'SUCCESS'
-		// 			// } else {
-		// 			// 	this.formState = 'ERROR'
-		// 			// 	console.log(res)
-		// 			// }
-		// 		},
-		// 		error: (err: any) => {
-		// 			console.log(err)
-		// 			this.formState = 'ERROR'
-		// 			this.loading = false
-		// 			this.crudService.notificationService.error('Error creating ' + this.sectionConfig.nameSingular, err.error.message)
-		// 		}
-		// 	})
-		// }
+		this.crudService.save(this.sectionForm.getRawValue(), this.sectionConfig.model)!
+		.subscribe({
+			next: (res: any) => {
+				this.crudService.notificationService.success('El registro se ha creado correctamente', '');
+				this.crudService.read(this.sectionConfig.model)
+			},
+			error: (error: any) => {
+				let errors = error.error;
+				if(errors) {
+					for (let key in errors) {
+						this.sectionForm.get(key)?.setErrors({serverError: errors[key]})
+						this.crudService.notificationService.error("Error ", errors[key]);
+					}
+				}
+			},
+			complete: () => {
+			}
+		});
 	}
-
 
 	buildFormData(data: any): FormData {
 		let formData = new FormData();
@@ -150,26 +139,39 @@ export class CrudComponent implements OnChanges {
 		}
 	}
 
+//#endregion
 
+//#region  Row Selection
 
-    
+	toggleRowSelection(row: any): void {
+		if(this.selectedRowsCount() === 1) {
+			this.activeData = row;
+		} else {
+			this.activeData = {}
+		}
+		this.updateSelected();	
+	}
+
     toggleAllRows(event: any): void {
-
+		
 		if(event.target.checked) {
 			if (this.selectedRows().length >= 0) {
-				// this.data = this.crudService.results().filter(row => {
-				// 	row.selected = true;
-				// 	return true;
-				// });
+				this.data = this.crudService.results().filter(row => {
+					row.selected = true;
+					return true;
+				});
 			 }
 		} else {
 			this.deselectAllRows()
 		}
-
-		// this.updateSelected()
+		this.updateSelected()
 	}
 
-//#region  Row Selection
+	updateSelected(): void {
+		this.selectedRows.set(this.crudService.results().filter(row => row.selected));
+		console.log("Selected Rows ", this.selectedRows())
+	}
+
 	toggleCreationForm(): void {
 		this.creationFormVisible = !this.creationFormVisible;
 
@@ -182,16 +184,15 @@ export class CrudComponent implements OnChanges {
 		this.sectionForm.reset();
 	}
 
-//#endregion
-
-
     deselectAllRows(): void {
 
-		// this.data.forEach(row => {
-		// 	row.selected = false;
-		// });
+		this.data.forEach(row => {
+			row.selected = false;
+		});
 
-		// this.selectedRows.set([]);
+		this.selectedRows.set([]);
 	}
+
+//#endregion
 
 }

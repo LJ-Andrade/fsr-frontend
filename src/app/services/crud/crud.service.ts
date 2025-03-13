@@ -36,6 +36,8 @@ export class CrudService extends DataService  {
 	public loading = computed(() => this.#state().loading)
 	public error = computed(() => this.#state().error)
 
+
+
 	public read(modelName: string, url: string | null = null) {
 		if (!url)
 			url = `${environment.apiUrl}`+modelName
@@ -63,17 +65,11 @@ export class CrudService extends DataService  {
 			});
 	}
     
-	
-
 
 	save(data: any, model: string): Observable<any>  {
 
-
-		let formData = this.getFormData(data)
-		console.log(formData)
-
 		return new Observable(observer => {
-			this.httpPost(`${environment.apiUrl+model}`, formData).subscribe({
+			this.httpPost(`${environment.apiUrl+model}`, data).subscribe({
 				next: (res: any) => {
 					observer.next(res);
 					console.log(res)
