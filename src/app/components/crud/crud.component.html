@@ -2,10 +2,10 @@
 <p-toolbar styleClass="mb-6">
 	<ng-template #start>
 		@if(!creationFormVisible) {
-		<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
-			(onClick)="toggleCreationForm()" />
+			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
+				(onClick)="toggleCreationForm()" />
 		} @else {
-		<p-button label="List" icon="pi pi-list" class="mr-2" (onClick)="toggleCreationForm()" />
+			<p-button label="List" icon="pi pi-list" class="mr-2" (onClick)="toggleCreationForm()" />
 		}
 		<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined />
 	</ng-template>
@@ -69,56 +69,55 @@
 </div>
 } @else {
 <h2>Creating {{ sectionConfig.nameSingular }}</h2>
-<form mainForm class="form-group main-form" [formGroup]="sectionForm">
-	@for(field of formFields; track $index) {
-	<div [class]="field.cols" [ngClass]="{ 'Hidden': field.hidden }">
-		@switch (field.type) {
+<form mainForm class="main-form" [formGroup]="sectionForm">
+	<div class="grid grid-cols-12 gap-4">
+		@for(field of formFields; track $index) {
+			<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden }">
+				@switch (field.type) {
 
-		@case('text') {
-		<label [for]="field.name">{{ field.label }}</label>
-		<input [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" text="text" />
-		<app-field-error [field]="sectionForm.get(field.name)" />
-		}
+					@case('text') {
+						<label [for]="field.name">{{ field.label }}</label><br />
+						<input pInputText [placeholder]="field.placeholder" text="text" />
+						<!-- <app-field-error [field]="sectionForm.get(field.name)" /> -->
+						 {{ field.touched }}
+						<p-message *ngIf="field.invalid && field.touched" severity="error" text="Correo inválido"></p-message>
+					}
 
-		@case('email') {
-		<label [for]="field.name">{{ field.label }}</label>
-		<input [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" text="email" />
-		<app-field-error [field]="sectionForm.get(field.name)" />
-		}
+					@case('email') {
+						<label [for]="field.name">{{ field.label }}</label>
+						<input [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" text="email" />
+						<app-field-error [field]="sectionForm.get(field.name)" />
+					}
 
-		@case('select') {
-		<label [for]="field.name">{{ field.label }}</label>
-		<select [formControlName]="field.name" class="form-select" title="Seleccionar...">
-			<option value="null" disabled>{{ field.placeholder }}</option>
-			@for(option of field.options; track $index) {
-			@if(field.useValueAsKey != undefined && field.useValueAsKey) {
-			<option [value]="option.value" [selected]="option.key == field.value">{{ option.value }}</option>
-			} @else {
-			<option [value]="option.key" [selected]="option.key == field.value">{{ option.value }}</option>
-			}
-			}
-		</select>
-		<app-field-error [field]="sectionForm.get(field.name)" />
-		}
+					@case('select') {
+						<label [for]="field.name">{{ field.label }}</label>
+						<select [formControlName]="field.name" class="form-select" title="Seleccionar...">
+							<option value="null" disabled>{{ field.placeholder }}</option>
+							@for(option of field.options; track $index) {
+							@if(field.useValueAsKey != undefined && field.useValueAsKey) {
+							<option [value]="option.value" [selected]="option.key == field.value">{{ option.value }}</option>
+							} @else {
+							<option [value]="option.key" [selected]="option.key == field.value">{{ option.value }}</option>
+							}
+							}
+						</select>
+						<app-field-error [field]="sectionForm.get(field.name)" />
+					}
 
-		@case('textarea') {
+					@case('textarea') {
+						<label [for]="field.name">{{ field.label }}</label>
+						<textarea [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder"></textarea>
+						<app-field-error [field]="sectionForm.get(field.name)" />
+					}
 
-		<label [for]="field.name">{{ field.label }}</label>
-		<textarea [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder"></textarea>
-		<app-field-error [field]="sectionForm.get(field.name)" />
-
-		}
-
-		@default {
-		No input
-		}
+					@default {
+						No input
+					}
+				}
+			</div>
 		}
 	</div>
-	}
 	<p-button label="Save" icon="pi pi-check" (onClick)="submitForm()" severity="success"
 		[loading]="loading"></p-button>
-
-
-
 </form>
 }

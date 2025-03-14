@@ -29,13 +29,13 @@ export class UsersComponent {
 
     formFields: any[] = [
 
-		{ name: 'name', label: 'Username', value: '', placeholder: 'Enter the username', type: 'text', class: '',
+		{ name: 'name', label: 'Username', value: '', placeholder: 'Enter the username', type: 'text', class: 'col-span-6',
 			validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
 
-        { name: 'first_name', label: 'First Name', value: '', placeholder: 'Ingrese su nombre', type: 'text', class: '',
+        { name: 'first_name', label: 'First Name', value: '', placeholder: 'Ingrese su nombre', type: 'text', class: 'col-span-6',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
 
-        { name: 'email', label: 'Email', value: '', placeholder: 'Ingrese su nombre', type: 'text', class: '',
+        { name: 'email', label: 'Email', value: '', placeholder: 'Ingrese su nombre', type: 'text', class: 'col-span-12',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.email ] },
 
 	]
