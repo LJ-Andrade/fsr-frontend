@@ -1,10 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '@src/app/services/auth/auth.service';
+// import { AuthService } from '@src/app/services/auth/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { HeaderComponent } from '../components/header/header.component';
-
 
 @Component({
     selector: 'app-main',
@@ -14,10 +13,7 @@ import { HeaderComponent } from '../components/header/header.component';
     styleUrl: './main.component.sass'
 })
 
-
 export default class MainComponent {
-	authService = inject(AuthService);
+	// authService = inject(AuthService);
 	router = inject(Router);
-
-	// ngOnInit(): void { }
 }

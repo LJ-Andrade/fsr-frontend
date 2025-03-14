@@ -1,5 +1,10 @@
 <app-crud
     [sectionConfig]="sectionConfig"
     [listData]="listData"
+    [dataRelations]="dataRelations"
+    [listConfig]="listConfig"
     [formFields]="formFields">
 </app-crud>
+<!-- @for(role of dataRelations.roles; track $index) {
+    <p>{{ role.name }}</p>
+} -->

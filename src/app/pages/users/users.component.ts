@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CrudComponent, SectionConfig, ListData } from '@src/app/components/crud/crud.component';
+import { CrudComponent, SectionConfig, ListData, ListConfig } from '@src/app/components/crud/crud.component';
 import { Validators } from '@angular/forms';
+import { DataService } from '@src/app/services/data.service';
 
 @Component({
     selector: 'app-users',
@@ -11,21 +12,56 @@ import { Validators } from '@angular/forms';
 })
 
 export class UsersComponent {
+    
+    dataService: DataService = inject(DataService);
+
+    dataRelations = signal<any>({
+        roles: []
+    })
+
+    roles = signal<any[]>([])
+
+    ngOnInit() {
+        this.fetchRelations()
+    }
+
+    fetchRelations() {
+        this.dataService.getModelData('roles').subscribe(
+            data => this.roles.set(data)
+        );
+
+        this.dataRelations.set({
+            roles: this.roles(),
+        })
+
+        console.log(this.dataRelations)
+    }
 
     sectionConfig: SectionConfig = {
 		model: 'users',
+        icon: 'pi pi-users',
 		nameSingular: 'user',
-		namePlural: 'users'
+		namePlural: 'users',
+        formSize: 'MEDIUM',
 	}
 
     listData: ListData[] =
 	[
-		{ name: 'id', text: 'Id', columnClass: 'w-3', hideOnCreation: false, hideOnEdition: false },
+		{ name: 'id', text: 'Id', columnClass: 'w-3', hideOnCreation: false, hideOnEdition: false, 
+            unDeleteableIds: [ 1, 2 ], unEditableIds: [ 1, 2 ] },
 		{ name: 'user', text: 'Username' },
         { name: 'email', text: 'Email' },
+        // { name: 'role', text: 'Role', columnClass: 'w-6',
+        //     relation: true, relationName: 'roles', 'relationFieldName': 'name'
+        // },
         { name: 'first_name', text: 'First Name'},
         { name: 'last_name', text: 'Last Name', columnClass: '', }
 	];
+
+    listConfig: ListConfig = {
+        unDeleteableIds: [ 1, 2 ],
+        unEditableIds: [ 1, 2 ]
+    }
 
     formFields: any[] = [
 
@@ -34,6 +70,14 @@ export class UsersComponent {
 
         { name: 'first_name', label: 'First Name', value: '', placeholder: 'Ingrese su nombre', type: 'text', class: 'col-span-6',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
+
+        { name: 'roles', label: 'Roles', value: '', placeholder: 'Ingrese su nombre', type: 'select', class: 'col-span-12',
+            validators: [ Validators.required ], 
+            relation: true, 
+            relationName: 'roles', 
+            relationFieldName: 'name',
+            relationData: this.roles()
+        },
 
         { name: 'email', label: 'Email', value: '', placeholder: 'Ingrese su nombre', type: 'text', class: 'col-span-12',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.email ] },

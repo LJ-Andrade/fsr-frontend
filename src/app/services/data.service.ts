@@ -1,14 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Pagination } from '../interfaces/results.interface';
-import { environment } from '@src/environments/environment';
-import { Observable } from 'rxjs';
+import { environment } from '@src/environments/environment.development';
+import { catchError, map, Observable, of } from 'rxjs';
 
 
 @Injectable({
     providedIn: 'root'
 })
-
 export class DataService {
     private http = inject(HttpClient);
 
@@ -36,24 +35,28 @@ export class DataService {
 		}
 		return '';
 	}
-
+	
     httpFetch<T>(url: string, options?: any): Observable<any> {
-		return this.http.get<T>(url, options ?? this.defaultOptions);
+		return this.http.get<T>(`${environment.apiUrl}` + url, options ?? this.defaultOptions);
 	}
 
 	// Post
 	httpPost<T>(url: string, body: any, options?: any): Observable<any> {
-		return this.http.post<T>(url, body, options ?? this.defaultOptions);
+		return this.http.post<T>(`${environment.apiUrl}` + url, body, options ?? this.defaultOptions);
 	}
 
 	// Delete
 	httpDelete<T>(url: string, options?: any): Observable<any> {
-		return this.http.delete<T>(url, options ?? this.defaultOptions);
+		return this.http.delete<T>(`${environment.apiUrl}` + url, options ?? this.defaultOptions);
 	}
 
 	// Put
 	httpPut<T>(url: string, body: any, options?: any): Observable<any> {
-		return this.http.put<T>(url, body, options ?? this.defaultOptions);
+		return this.http.put<T>(`${environment.apiUrl}` + url, body, options ?? this.defaultOptions);
+	}
+
+	getDataFromModel<T>(model: string, params?: any): Observable<any> {
+		return this.httpFetch<T>(model + this.getQueryString(params));
 	}
 
     makePagination<T>(paginationData: Pagination<T>): any {
@@ -72,4 +75,14 @@ export class DataService {
 			total: paginationData.total
 		};
 	}
+
+    getModelData(modelName: string) {
+        return this.getDataFromModel(modelName).pipe(
+            map((response: any) => response.data),
+            catchError((error) => {
+                console.error(`Error fetching ${modelName}:`, error);
+                return of([]);
+            })
+        );
+    }
 }

@@ -117,7 +117,7 @@ export class AuthService {
 	retrieveLoggedUser(): Promise<AuthUser | null> {
 		return new Promise((resolve) => {
 			if (this.isAuthenticated() && this.user()?.user == null) {
-				this.dataService.httpFetch(environment.apiUrl + 'auth/me').subscribe({
+				this.dataService.httpFetch('auth/me').subscribe({
 					next: (res: any) => {
 						this.user.set({ user: res.data });
 						resolve(res.data);

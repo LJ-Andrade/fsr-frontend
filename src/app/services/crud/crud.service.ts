@@ -2,22 +2,11 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Results } from '@src/app/interfaces/results.interface';
 import { DataService } from '@src/app/services/data.service';
 import { NotificationService } from '@src/app/services/notification.service';
-import { environment } from '@src/environments/environment';
-import { Observable, of } from 'rxjs';
-
-
-// export interface CrudOperations {
-//     fetch(modelName: string, url?: string ): any;
-//     save(data: any, model: string): any;
-//     edit(data: any, model: string): any;
-//     delete(id: number, model: string): any;
-// }
-
+import { Observable } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root'
 })
-
 
 export class CrudService extends DataService  {
 
@@ -36,15 +25,14 @@ export class CrudService extends DataService  {
 	public loading = computed(() => this.#state().loading)
 	public error = computed(() => this.#state().error)
 
-
+	public clearResults() {
+		this.#state.set({loading: true, results: [], pagination: undefined, error: ''})
+	}
 
 	public read(modelName: string, url: string | null = null) {
 		if (!url)
-			url = `${environment.apiUrl}`+modelName
-
-		// this.#state.set({loading: true, results: this.results(), pagination: this.pagination(), error: ''})
-		// this.#softLoading.set(true);
-
+			url = modelName
+		
 		this.dataService.httpFetch(url)
 			.subscribe({
 				next: (res: any) => {
@@ -60,16 +48,14 @@ export class CrudService extends DataService  {
 					console.log("Error on users ", error)
 				},
 				complete: () => {
-					// this.#softLoading.set(false);
 				}
 			});
 	}
-    
 
 	save(data: any, model: string): Observable<any>  {
 
 		return new Observable(observer => {
-			this.httpPost(`${environment.apiUrl+model}`, data).subscribe({
+			this.httpPost(model, data).subscribe({
 				next: (res: any) => {
 					observer.next(res);
 					console.log(res)
@@ -86,9 +72,26 @@ export class CrudService extends DataService  {
 		});
 	}
 
+	delete(id: number, route: string) {
+
+		return new Observable(observer => {
+			this.httpDelete(route+'/'+id).subscribe({
+				next: (res: any) => {
+					observer.next(res);
+				},
+				error: (error: any) => {
+					console.log("Error on crudService ", error);
+					observer.error(error);
+				},
+				complete: () => {
+					observer.complete();
+				}
+			});
+		});
+	}
+
 
 	getFormData(data: any, isEdit: boolean = false): any {
-
 		let formData = new FormData();
 
 		if (data == undefined) {
@@ -104,7 +107,6 @@ export class CrudService extends DataService  {
 			} else {
 				formData.append(key, value);
 			}
-
 		}
 
 		if(isEdit) {
@@ -115,83 +117,4 @@ export class CrudService extends DataService  {
 	}
 
 
-	// edit(data: any, model: string): Observable<any> {
-
-	// 	if (data == undefined) {
-	// 		console.error("Data is undefined on save method.")
-	// 		return of(null);
-	// 	}
-
-	// 	this.#softLoading.set(true);
-
-	// 	let formData = this.getFormData(data, true)
-
-	// 	return new Observable(observer => {
-	// 		this.httpPost(`${environment.apiUrl+model+'/'+data.id}`, formData).subscribe({
-	// 			next: (res: any) => {
-	// 				observer.next(res);
-	// 			},
-	// 			error: (error: any) => {
-	// 				console.log("Error on crudService ", error);
-	// 				// this.#state.set({loading: false, results: [], pagination: undefined, error: "Error al cargar los datos. Inténtalo más tarde."});
-	// 				observer.error(error);
-	// 			},
-	// 			complete: () => {
-	// 				observer.complete();
-	// 				this.#softLoading.set(false);
-	// 			}
-	// 		});
-	// 	});
-	// }
-
-	// delete(id: number, route: string) {
-
-	// 	this.#softLoading.set(true);
-
-	// 	return new Observable(observer => {
-	// 		this.httpDelete(`${environment.apiUrl+route+'/'+id}`).subscribe({
-	// 			next: (res: any) => {
-	// 				observer.next(res);
-	// 			},
-	// 			error: (error: any) => {
-	// 				console.log("Error on crudService ", error);
-	// 				observer.error(error);
-	// 				this.#softLoading.set(false);
-	// 			},
-	// 			complete: () => {
-	// 				this.#softLoading.set(false);
-	// 				observer.complete();
-	// 			}
-	// 		});
-	// 	});
-	// }
-
-	// batchDelete(ids: number[], model: string) {
-
-	// 	this.#softLoading.set(true);
-
-	// 	return new Observable(observer => {
-	// 		this.httpDelete(`${environment.apiUrl+model+'/'+ids}`)
-	// 			.subscribe({
-	// 				next: (res: any) => {
-	// 					observer.next(res);
-	// 				},
-	// 				error: (error: any) => {
-	// 					console.log("Error on crudService ", error);
-	// 					observer.error(error);
-	// 					this.#softLoading.set(false);
-	// 				},
-	// 				complete: () => {
-	// 					observer.complete();
-	// 					this.#softLoading.set(false);
-	// 				}
-	// 			});
-	// 		});
-
-	// }
-
-
-	// ngOnDestroy() {
-	// 	console.log("Destroying crud service")
-	// }
 }

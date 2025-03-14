@@ -75,7 +75,7 @@ export const routes: Routes = [
 						component: RolesComponent,
 						data: {
 							title: 'Roles',
-							icon: 'pi pi-user'
+							icon: 'pi pi-crown'
 						}
 					},
 				]
