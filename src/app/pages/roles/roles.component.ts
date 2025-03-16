@@ -26,7 +26,7 @@ export class RolesComponent {
 	];
 
 	listConfig: ListConfig = {
-        unDeleteableIds: [ 1, 2, 22 ],
+        unDeleteableIds: [ 1, 2 ],
         unEditableIds: [ 1, 2 ]
     }
 

@@ -3,8 +3,16 @@
     [listData]="listData"
     [dataRelations]="dataRelations"
     [listConfig]="listConfig"
-    [formFields]="formFields">
+    [formFields]="formFields"
+    >
 </app-crud>
-<!-- @for(role of dataRelations.roles; track $index) {
-    <p>{{ role.name }}</p>
-} -->
+
+<!-- CUSTOM FORM EXAMPLE -->
+<!-- [customForm]="customFormTemplate" ADD THIS TO app-crud-->
+
+<!-- <ng-template #customFormTemplate>
+  <form>
+    <input type="text" placeholder="Entrada personalizada" />
+    <button>Enviar Personalizado</button>
+  </form>
+</ng-template> -->

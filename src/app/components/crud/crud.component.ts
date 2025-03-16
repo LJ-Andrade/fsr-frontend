@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges,  SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges,  SimpleChanges, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -80,6 +80,8 @@ export class CrudComponent implements OnChanges {
 	@Input() listConfig: ListConfig = { unDeleteableIds: [], unEditableIds: [] };
 	@Input() formFields: any[] = []
 	@Input() formData: any = {};
+	@Input() customForm!: TemplateRef<any>;
+
 	
     @ViewChild('mainCheckbox') mainCheckbox!: ElementRef;
 
@@ -94,7 +96,7 @@ export class CrudComponent implements OnChanges {
 	recordsToDelete: any[] = [];
 
     checked: boolean = false;
-	creationFormVisible: boolean = true;
+	creationFormVisible: boolean = false;
 	displayDeleteConfirmation: boolean = false;
 
     ngOnInit() {

@@ -92,75 +92,81 @@
 					<b> Creating {{ sectionConfig.nameSingular }}</b>
 					
 				</ng-template>
-				<form mainForm class="main-form" [formGroup]="sectionForm">
-					<div class="grid grid-cols-12 gap-4">
-						@for(field of formFields; track $index) {
-							<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
-								@switch (field.type) {
 
-									@case('text') {
-										<p-iftalabel>
-											<input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
-											<label for="username">{{ field.label }}</label>
-										</p-iftalabel>
-										<app-field-error [field]="sectionForm.get(field.name)" />
-										{{ field.touched }}
-										<p-message *ngIf="field.invalid && field.touched" severity="error" text="Correo inválido"></p-message>
-									}
+				<ng-container *ngTemplateOutlet="customForm || defaultForm"></ng-container>
 
-									@case('email') {
-										<label [for]="field.name">{{ field.label }}</label>
-										<input [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" text="email" />
-										<app-field-error [field]="sectionForm.get(field.name)" />
-									}
+				<ng-template #defaultForm>
+				
+					<form mainForm class="main-form" [formGroup]="sectionForm">
+						<div class="grid grid-cols-12 gap-4">
+							@for(field of formFields; track $index) {
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+									@switch (field.type) {
 
-									@case('select') {
-										<label [for]="field.name">{{ field.label }}</label>
-										@if(field.relation == true) {
-											{{ log(field.relationData.data) }}
-												<!-- <select [formControlName]="field.name" class="form-select" title="Seleccionar...">
+										@case('text') {
+											<p-iftalabel>
+												<input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
+												<label for="username">{{ field.label }}</label>
+											</p-iftalabel>
+											<app-field-error [field]="sectionForm.get(field.name)" />
+											{{ field.touched }}
+											<p-message *ngIf="field.invalid && field.touched" severity="error" text="Correo inválido"></p-message>
+										}
+
+										@case('email') {
+											<label [for]="field.name">{{ field.label }}</label>
+											<input [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" text="email" />
+											<app-field-error [field]="sectionForm.get(field.name)" />
+										}
+
+										@case('select') {
+											<label [for]="field.name">{{ field.label }}</label>
+											@if(field.relation == true) {
+												{{ log(field.relationData.data) }}
+													<!-- <select [formControlName]="field.name" class="form-select" title="Seleccionar...">
+														<option value="null" disabled>{{ field.placeholder }}</option>
+														@for(option of field.relationData; track $index) {
+															@if(field.useValueAsKey != undefined && field.useValueAsKey) {
+																<option [value]="option.value" [selected]="option.key == field.value">{{ option.value }}</option>
+															} @else {
+																<option [value]="option.key" [selected]="option.key == field.value">{{ option.value }}</option>
+															}
+														}
+													</select> -->
+
+											} @else {
+
+												<select [formControlName]="field.name" class="form-select" title="Seleccionar...">
 													<option value="null" disabled>{{ field.placeholder }}</option>
-													@for(option of field.relationData; track $index) {
+													@for(option of field.options; track $index) {
 														@if(field.useValueAsKey != undefined && field.useValueAsKey) {
 															<option [value]="option.value" [selected]="option.key == field.value">{{ option.value }}</option>
 														} @else {
 															<option [value]="option.key" [selected]="option.key == field.value">{{ option.value }}</option>
 														}
 													}
-												</select> -->
+												</select>
+												<app-field-error [field]="sectionForm.get(field.name)" />
+											}
+										}
 
-										} @else {
-
-											<select [formControlName]="field.name" class="form-select" title="Seleccionar...">
-												<option value="null" disabled>{{ field.placeholder }}</option>
-												@for(option of field.options; track $index) {
-													@if(field.useValueAsKey != undefined && field.useValueAsKey) {
-														<option [value]="option.value" [selected]="option.key == field.value">{{ option.value }}</option>
-													} @else {
-														<option [value]="option.key" [selected]="option.key == field.value">{{ option.value }}</option>
-													}
-												}
-											</select>
+										@case('textarea') {
+											<label [for]="field.name">{{ field.label }}</label>
+											<textarea [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder"></textarea>
 											<app-field-error [field]="sectionForm.get(field.name)" />
 										}
-									}
 
-									@case('textarea') {
-										<label [for]="field.name">{{ field.label }}</label>
-										<textarea [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder"></textarea>
-										<app-field-error [field]="sectionForm.get(field.name)" />
+										@default {
+											No input
+										}
 									}
-
-									@default {
-										No input
-									}
-								}
-							</div>
-						}
-					</div>
-					<p-button label="Save" icon="pi pi-check" (onClick)="submitForm()" severity="success"
-						[loading]="loading"></p-button>
+								</div>
+							}
+						</div>
+						<p-button label="Save" icon="pi pi-check" (onClick)="submitForm()" severity="success"
+							[loading]="loading"></p-button>
 					</form>
+				</ng-template>
 			</p-panel>
 		</div>
 	</div>

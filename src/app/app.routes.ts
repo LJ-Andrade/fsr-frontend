@@ -77,7 +77,7 @@ export const routes: Routes = [
 							title: 'Roles',
 							icon: 'pi pi-crown'
 						}
-					},
+					}
 				]
 			}
 		]
