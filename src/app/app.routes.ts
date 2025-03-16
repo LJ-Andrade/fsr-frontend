@@ -10,6 +10,7 @@ import { ApiTestComponent } from './pages/api-test/api-test.component';
 import { ExamplesComponent } from './pages/examples/examples.component';
 import { UsersComponent } from './pages/users/users.component';
 import { RolesComponent } from './pages/roles/roles.component';
+import { Users2Component } from './pages/users2/users.component';
 
 /**
  * App routes
@@ -67,6 +68,14 @@ export const routes: Routes = [
 						component: UsersComponent,
 						data: {
 							title: 'Users',
+							icon: 'pi pi-users'
+						}
+					},
+					{
+						path: 'users2',
+						component: Users2Component,
+						data: {
+							title: 'Users 2',
 							icon: 'pi pi-users'
 						}
 					},

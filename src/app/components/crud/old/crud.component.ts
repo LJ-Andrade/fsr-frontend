@@ -4,14 +4,14 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ButtonModule } from 'primeng/button';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SkeletonComponent } from "../skeleton/skeleton.component";
-import { ToolbarModule } from 'primeng/toolbar';
 import { CrudService } from '@src/app/services/crud/crud.service';
-import { FieldErrorComponent } from '../field-error/field-error.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { DialogModule } from 'primeng/dialog';
 import { Panel, PanelModule } from 'primeng/panel';
+import { SkeletonComponent } from '../../skeleton/skeleton.component';
+import { FieldErrorComponent } from '../../field-error/field-error.component';
+import { Toolbar } from 'primeng/toolbar';
 
 type FormState = 'IDLE' | 'SUCCESS' | 'ERROR'
 
@@ -60,7 +60,7 @@ export interface SectionConfig {
 	standalone: true,
 	imports: [
 		CommonModule, FormsModule, ReactiveFormsModule, ButtonModule, CheckboxModule, Panel, IftaLabelModule,
-		ToolbarModule, SkeletonComponent, FieldErrorComponent, InputTextModule, Message, DialogModule ],
+		Toolbar, SkeletonComponent, FieldErrorComponent, InputTextModule, Message, DialogModule ],
 	templateUrl: './crud.component.html'
 })
 

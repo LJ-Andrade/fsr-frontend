@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CrudComponent, SectionConfig, ListData, ListConfig } from '@src/app/components/crud/crud.component';
+import { CrudComponent, SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
 import { Validators } from '@angular/forms';
 
 @Component({

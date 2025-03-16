@@ -1,27 +1,29 @@
 import { Component, computed, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
 import { Validators } from '@angular/forms';
-import { DataService } from '@src/app/services/data.service';
-import { CrudComponent, ListConfig, ListData, SectionConfig } from '@src/app/components/crud/old/crud.component';
+import { Crud } from '@src/app/components/crud/crud';
+import { ListComponent } from '@src/app/components/crud/old/list.component';
+import { Toolbar } from 'primeng/toolbar';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'app-users',
     standalone: true,
-    imports: [ CommonModule,  CrudComponent ],
+    imports: [ CommonModule, ListComponent, Toolbar, ButtonModule ],
     templateUrl: './users.component.html'
 })
 
-export class UsersComponent {
-    
-    dataService: DataService = inject(DataService);
+export class Users2Component extends Crud {
 
     dataRelations = signal<any>({
         roles: []
     })
 
-    roles = signal<any[]>([])
+    results = signal<any>({})
 
-    ngOnInit() {
+
+    override ngOnInit() {
         this.fetchRelations()
     }
 

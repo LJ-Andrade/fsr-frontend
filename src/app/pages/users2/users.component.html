@@ -1,0 +1,25 @@
+<h1><i [class]="sectionConfig.icon" style="color: slateblue"></i> {{ sectionConfig.namePlural | titlecase }}</h1>
+<p-toolbar styleClass="mb-6">
+	<ng-template #start>
+		<!-- @if(!creationFormVisible) {
+			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
+				(onClick)="toggleCreationForm()" />
+		} @else {
+			<p-button label="List" icon="pi pi-list" class="mr-2" (onClick)="toggleCreationForm()" />
+		}
+		@if(selectedRows().length > 0) {
+			<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined 
+				(onClick)="addSelectedToDeleteQueue()"/>
+		} -->
+	</ng-template>
+
+	<ng-template #end>
+		<p-button label="Export" icon="pi pi-upload" severity="secondary" />
+	</ng-template>
+</p-toolbar>
+
+
+<app-list-component
+  [results]="results">
+
+</app-list-component>
