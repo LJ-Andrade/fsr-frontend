@@ -1,16 +1,16 @@
 <h1><i [class]="sectionConfig.icon" style="color: slateblue"></i> {{ sectionConfig.namePlural | titlecase }}</h1>
 <p-toolbar styleClass="mb-6">
 	<ng-template #start>
-		<!-- @if(!creationFormVisible) {
+		@if(!creationFormVisible) {
 			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
 				(onClick)="toggleCreationForm()" />
 		} @else {
 			<p-button label="List" icon="pi pi-list" class="mr-2" (onClick)="toggleCreationForm()" />
 		}
-		@if(selectedRows().length > 0) {
-			<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined 
-				(onClick)="addSelectedToDeleteQueue()"/>
-		} -->
+		@if(batchDeleteButtonVisible) {
+			<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined />
+		}
+
 	</ng-template>
 
 	<ng-template #end>
@@ -19,7 +19,9 @@
 </p-toolbar>
 
 
-<app-list-component
-  [results]="results">
-
-</app-list-component>
+<app-list-component *ngIf="!creationFormVisible"
+  	[dataState]="crudService.state"
+  	[listData]="listData"
+	[listConfig]="listConfig"
+	(rowsSelected)="onRowsSelected($event)"
+/>

@@ -1,12 +1,11 @@
-
-
-import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonComponent } from '../../skeleton/skeleton.component';
 import { ToolbarModule } from 'primeng/toolbar';
+import { Results } from '@src/app/interfaces/results.interface';
 
 @Component({
     selector: 'app-list-component',
@@ -19,57 +18,68 @@ export class ListComponent {
 
     @Input() listData: any[] = [];
     @Input() listConfig: any = {};
-    @Input() results = signal<any[]>([]);
-    @Input() loading: boolean = false;
+    @Input() dataState!: Signal<Results<any>>
+	
+	@Output() rowsSelected = new EventEmitter<any[]>();
     @Output() showDeleteConfirmation = new EventEmitter<void>();
     
     selectedRows = signal<any[]>([]);
     selectedRowsCount = computed(() => this.selectedRows().length);
 	activeData: any = {}
-    data: any[] = [];
+    currentData: any[] = [];
 	recordsToDelete: any[] = [];
 
 
     //#region  Row Selection
 
+	// toggleRowSelection(row: any): void {
+	// 	if(this.selectedRowsCount() === 1) {
+	// 		this.activeData = row;
+	// 	} else {
+	// 		this.activeData = {}
+	// 	}
+	// 	this.updateSelected();
+	// }
+
+	
 	toggleRowSelection(row: any): void {
-		if(this.selectedRowsCount() === 1) {
-			this.activeData = row;
-		} else {
-			this.activeData = {}
-		}
-		this.updateSelected();	
-	}
+		this.updateSelected();
+		this.rowsSelected.emit(this.selectedRows());
+	  }
 
-    toggleAllRows(event: any): void {
-		
-		if(event.target.checked) {
-			if (this.selectedRows().length >= 0) {
-				this.data = this.results().filter(row => {
-					row.selected = true;
-					return true;
-				});
-			 }
-		} else {
-			this.deselectAllRows()
-		}
-		this.updateSelected()
-	}
 
+	toggleAllRows(event: any): void {
+		if (event.target.checked) {
+		  this.currentData = this.dataState().results.filter(row => {
+			row.selected = true;
+			return true;
+		  });
+		} else {
+		  this.deselectAllRows();
+		}
+		this.updateSelected();
+		this.rowsSelected.emit(this.selectedRows());
+	}
 
     updateSelected(): void {
-		this.selectedRows.set(this.results().filter(row => row.selected));
+		this.selectedRows.set(this.dataState().results.filter(row => row.selected));
 		console.log("Selected Rows ", this.selectedRows())
 	}
 
-    deselectAllRows(): void {
-
-		this.data.forEach(row => {
-			row.selected = false;
-		});
-
+	deselectAllRows(): void {
+		this.dataState().results.forEach(row => (row.selected = false));
 		this.selectedRows.set([]);
+		this.rowsSelected.emit(this.selectedRows());
 	}
+
+    // deselectAllRows(): void {
+
+	// 	this.currentData.forEach(row => {
+	// 		row.selected = false;
+	// 	});
+
+	// 	this.selectedRows.set([]);
+	// }
 
 //#region Delete
 

@@ -20,15 +20,15 @@ export class Users2Component extends Crud {
         roles: []
     })
 
-    results = signal<any>({})
-
+    roles = signal<any[]>([])
 
     override ngOnInit() {
-        this.fetchRelations()
+        super.ngOnInit()
+        // this.fetchRelations()
     }
 
     fetchRelations() {
-        this.dataService.getModelData('roles').subscribe(
+        this.crudService.dataService.getModelData('roles').subscribe(
             data => this.roles.set(data)
         );
 
@@ -39,7 +39,7 @@ export class Users2Component extends Crud {
         console.log(this.dataRelations)
     }
 
-    sectionConfig: SectionConfig = {
+    override sectionConfig: SectionConfig = {
 		model: 'users',
         icon: 'pi pi-users',
 		nameSingular: 'user',
