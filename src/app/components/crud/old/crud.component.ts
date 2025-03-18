@@ -30,6 +30,8 @@ export interface ListData {
 	hideOnEdition?: boolean;
 	columnClass?: string;
 
+	isArray?: boolean;
+	showAsBadge?: boolean;
 	relation?: boolean;
 	relationName?: any;
 	relationFieldName?: any;

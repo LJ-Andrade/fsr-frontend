@@ -1,27 +1,22 @@
-<h1><i [class]="sectionConfig.icon" style="color: slateblue"></i> {{ sectionConfig.namePlural | titlecase }}</h1>
-<p-toolbar styleClass="mb-6">
-	<ng-template #start>
-		@if(!creationFormVisible) {
-			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
-				(onClick)="toggleCreationForm()" />
-		} @else {
-			<p-button label="List" icon="pi pi-list" class="mr-2" (onClick)="toggleCreationForm()" />
-		}
-		@if(batchDeleteButtonVisible) {
-			<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined />
-		}
+<app-crud-manager
+    [apiDataResponse]="crudService.apiDataResponse"
+    [sectionConfig]="sectionConfig"
+    [listData]="listData"
+    [listConfig]="listConfig"
+    [listVisibility]="listVisibility"
+    [creationFormVisibility]="creationFormVisibility"
+    (rowsSelected)="onRowsSelected($event)"
+    (requestRead)="crudService.read($event)"
+    (requestCreationForm)="toggleCreationForm()">
+    
+	<div mainForm>
+		<app-crud-form
+			[sectionForm]="sectionForm"
+			[formFields]="formFields"
+			[formSize]="sectionConfig.formSize"
+			[loading]="crudService.apiDataResponse().loading"
+			(submitFormEvent)="submitForm()"
+		/>
+	</div>
 
-	</ng-template>
-
-	<ng-template #end>
-		<p-button label="Export" icon="pi pi-upload" severity="secondary" />
-	</ng-template>
-</p-toolbar>
-
-
-<app-list-component *ngIf="!creationFormVisible"
-  	[dataState]="crudService.state"
-  	[listData]="listData"
-	[listConfig]="listConfig"
-	(rowsSelected)="onRowsSelected($event)"
-/>
+</app-crud-manager>

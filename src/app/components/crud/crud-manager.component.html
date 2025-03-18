@@ -1,0 +1,139 @@
+<h1><i [class]="sectionConfig.icon" style="color: slateblue"></i> {{ sectionConfig.namePlural | titlecase }}</h1>
+
+<p-toolbar styleClass="mb-6">
+	<div class="p-toolbar-group-start">
+        @if(listVisibility) {
+			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
+				(onClick)="emitRequestCreationForm()" />
+		} @else {
+			<p-button label="List" icon="pi pi-list" class="mr-2" (onClick)="toggleListVisibility()" />
+		}
+		@if(selectedRows().length > 0) {
+			<p-button severity="danger" label="Delete selected" icon="pi pi-trash" outlined />
+		}
+        <ng-content select="[slot=actions]"></ng-content>
+	</div>
+
+	<ng-template #end>
+		
+	</ng-template>
+</p-toolbar>
+
+<div *ngIf="listVisibility" class="table-responsive">
+    @if(!apiDataResponse().loading){
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" class="checkbox-col">
+                        <p-checkbox #mainCheckbox [binary]="true" (change)="toggleAllRows($event)"></p-checkbox>
+                    </th>
+                    @for(column of listData; track $index) {
+                        @if(!column.hidden && !column.hideOnList) {
+                            <th scope="col">
+                                {{ column.text }}
+                            </th>
+                        }
+                    }
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(record of apiDataResponse().results; track record.id; let odd = $odd) {
+                    <tr class="table-row" [class.odd]="odd" [ngClass]="{ 'row-selected': record.selected } ">
+                        <td class="checkbox-col">
+                            <p-checkbox [(ngModel)]="record.selected" (onChange)="toggleRowSelection(record)" [binary]="true"></p-checkbox>
+                        </td>
+                        @for(item of listData; track $index; let odd = $odd) {
+                            @if(!item.hidden && !item.hideOnList) {
+                                @if(item.relation) {
+                                    <!-- Relation Data -->
+                                    <td [ngClass]="item['columnClass']">
+                                        @if(item.showAsBadge) {
+                                            <p-badge *ngIf="record[item.relationName] != ''" 
+                                                [value]="record[item.relationName]" 
+                                                badgeSize="small" severity="success" 
+                                            />
+                                        } @else {
+                                            {{ record[item.relationName] }}
+                                        }
+
+                                    </td>
+
+                                } @else {
+                                    <!-- Main Data -->
+                                    <td [ngClass]="item['columnClass']">
+                                        @if(item.showAsBadge) {
+                                            <p-badge *ngIf="record[item.name] != ''" 
+                                                [value]="record[item.name]" 
+                                                badgeSize="small" severity="success" 
+                                            />
+                                        } @else {
+                                            {{ record[item.name] }}
+                                        }
+                                    </td>
+                                } 
+                            }
+                        }
+                        <!-- ROW ACTIONS -->
+                        <td class="action-column">
+                            <!-- EDIT ACTION -->
+                        
+                            @if(listConfig.unEditableIds && !listConfig.unEditableIds.includes(+record.id)) {
+                                <p-button styleClass="mr-3 small-action-button" icon="pi pi-pencil" [rounded]="true" [text]="true"
+                                    [raised]="true" size="small" />
+                            }
+
+                            <!-- DELETE ACTION -->
+                            @if(listConfig.unEditableIds && !listConfig.unDeleteableIds.includes(+record.id)) {
+                                <p-button styleClass="small-action-button" icon="pi pi-trash" [rounded]="true" [text]="true"
+                                    [raised]="true" severity="danger" size="small"
+                                    (onClick)="deleteSingleRecord(record)" />
+                            } 
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    } @else {
+        <app-skeleton [rowsAmount]="5"></app-skeleton>
+    }
+    <p-paginator 
+        *ngIf="apiDataResponse().pagination"
+        [rows]="apiDataResponse().pagination?.per_page"
+        [totalRecords]="apiDataResponse().pagination?.total"
+        [pageLinkSize]="5"
+        (onPageChange)="onPageChange($event)"
+    ></p-paginator>
+</div>
+
+
+<!-- CREATION FORM  -->
+<div class="flex justify-center" *ngIf="creationFormVisibility">
+    <div class="w-full"
+        [ngClass]="{
+            'sm:max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl': sectionConfig.formSize == 'SMALL',
+            'sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl': sectionConfig.formSize == 'MEDIUM'
+        }">
+        <p-panel>
+            <ng-template pTemplate="header">
+                <i [class]="sectionConfig.icon" style="color: slateblue"></i> 
+                <b> Creating {{ sectionConfig.nameSingular }}</b>
+            </ng-template>
+            <ng-template pTemplate="body">
+                <ng-content select="[mainForm]"></ng-content>
+            </ng-template>
+        </p-panel>
+    </div>
+</div>
+
+<p-dialog header="Do you want to delete this record?" [(visible)]="displayDeleteConfirmation" [style]="{ width: '350px' }" [modal]="true">
+	<div class="flex items-center justify-center">
+		<i class="pi pi-exclamation-triangle mr-4" style="font-size: 2rem"> </i>
+		<span>Click YES to proceed.</span>
+	</div>
+	<ng-template #footer>
+		<p-button label="No" icon="pi pi-times" (click)="closeDeleteConfirmation()" text severity="secondary" />
+		<p-button label="YES" icon="pi pi-check" (click)="confirmDelete()" severity="danger" outlined autofocus />
+	</ng-template>
+</p-dialog>

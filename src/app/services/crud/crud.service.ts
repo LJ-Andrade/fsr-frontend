@@ -25,7 +25,7 @@ export class CrudService extends DataService  {
 	public loading = computed(() => this.#state().loading)
 	public error = computed(() => this.#state().error)
 
-	public state = this.#state;
+	public apiDataResponse = this.#state;
 	
 	public clearResults() {
 		this.#state.set({loading: true, results: [], pagination: undefined, error: ''})
