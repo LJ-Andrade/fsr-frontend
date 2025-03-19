@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
 import { Validators } from '@angular/forms';
 import { CrudBase } from '@src/app/components/crud/crud-base';
 import { CrudManagerComponent } from '@src/app/components/crud/crud-manager.component';
 import { CrudFormComponent } from '@src/app/components/crud/crud-form.component';
+import { SectionConfig, ListData, ListConfig } from '@src/app/interfaces/crud.interface';
 
 
 @Component({
@@ -70,7 +70,8 @@ export class UsersComponent extends CrudBase  {
             options: { 
                 name: 'roles', valueName: 'name', data: []
             },
-            validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
+            validators: [  ]
+        }
     
     ]
 }

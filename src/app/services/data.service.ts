@@ -37,8 +37,8 @@ export class DataService {
 		return '';
 	}
 	
-    httpFetch<T>(url: string, options?: any): Observable<any> {
-		return this.http.get<T>(`${environment.apiUrl}` + url, options ?? this.defaultOptions);
+    httpFetch<T>(url: string, params?: any, options?: any): Observable<any> {
+		return this.http.get<T>(`${environment.apiUrl}` + url + this.getQueryString(params), options ?? this.defaultOptions);
 	}
 
 	// Post
@@ -61,7 +61,6 @@ export class DataService {
 	}
 
     makePagination<T>(paginationData: Pagination<T>): any {
-		console.log(paginationData)
 		return {
 			current_page: paginationData.current_page,
 			first_page_url: paginationData.first_page_url,

@@ -6,13 +6,13 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Results } from '@src/app/interfaces/results.interface';
-import { SectionConfig } from './old/crud.component';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { PanelModule } from 'primeng/panel';
 import { Badge } from 'primeng/badge';
 import { NotificationService } from '@src/app/services/notification.service';
 import { CrudService } from '@src/app/services/crud/crud.service';
+import { SectionConfig } from '@src/app/interfaces/crud.interface';
 
 @Component({
 	selector: 'app-crud-manager',

@@ -1,7 +1,7 @@
 import { Injectable, OnInit, inject } from '@angular/core';
 import { CrudService } from '@src/app/services/crud/crud.service';
-import { ListConfig, ListData, SectionConfig } from './old/crud.component';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ListConfig, ListData, SectionConfig } from '@src/app/interfaces/crud.interface';
 
 
 @Injectable({
@@ -21,7 +21,8 @@ export class CrudBase implements OnInit {
 	
     ngOnInit(): void {
 		// this.toggleCreationForm(); // DEBUG
-       this.fetchData(2);
+    	// this.fetchData(1, {'first_name': 'Example', 'user': 'admin'}); // DEBUG Search Example 
+	   this.fetchData();
 	   this.buildSectionForm();
     }
 
@@ -45,28 +46,21 @@ export class CrudBase implements OnInit {
 	currentRecord: any = {};
 
 
-	fetchData(page: number = 1) {
+	fetchData(page: number = 1, params: any = {}) {
 		
 		if (page > 1) {
 			this.currentPage = page;
 		}
-		// if (event && 'page' in event) {
-		// 	if (typeof event.page === 'number' && !isNaN(event.page)) {
-		// 		this.currentPage = event.page;
-		// 	}
-		// }
 
 		let perPage: number = 10;
 		if (localStorage.getItem('perPage')) {
 			perPage = parseInt(localStorage.getItem('perPage')!);
 		}
 		
-		let url: string = 
-			this.sectionConfig.model +
-			'?page=' + this.currentPage + 
-			'&list_regs_per_page=' + perPage;
-			
-		this.crudService.read(url)
+		params['list_regs_per_page'] = perPage;
+		params['page'] = this.currentPage;
+		
+		this.crudService.read(this.sectionConfig.model, params)
 	}
 
     fetchRelation(model: string, field: string) {
@@ -116,7 +110,14 @@ export class CrudBase implements OnInit {
 		this.crudService.save(this.sectionForm.getRawValue(), this.sectionConfig.model)!
 		.subscribe({
 			next: (res: any) => {
-				this.crudService.notificationService.success('El registro se ha creado correctamente', '');
+				let message: string = '';
+				if (res.meta && res.meta.operation == 'update') {
+					console.log("Update")
+					message = 'The record has been updated successfully';
+				} else {
+					message = 'The record has been created successfully';
+				}
+				this.crudService.notificationService.success(message, '');
 				this.fetchData();
 			},
 			error: (error: any) => {

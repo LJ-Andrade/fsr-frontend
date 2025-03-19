@@ -28,12 +28,12 @@ export class CrudService extends DataService  {
 	public apiDataResponse = this.#state;
 	
 	public clearResults() {
-		this.#state.set({loading: true, results: [], pagination: undefined, error: ''})
+		this.#state.set({ loading: true, results: [], pagination: undefined, error: '' })
 	}
 
-	public read(url: string) {
+	public read(url: string, params: any = {}) {
 		
-		this.dataService.httpFetch(url)
+		this.dataService.httpFetch(url, params)
 			.subscribe({
 				next: (res: any) => {
 					this.#state.set({
@@ -42,7 +42,7 @@ export class CrudService extends DataService  {
 						pagination: this.dataService.makePagination(res.meta),
 						error: ''
 					})
-                    console.log(this.#state())
+                    // console.log(this.#state())
 				},
 				error: (error: any) => {
 					console.log("Error on users ", error)
@@ -53,12 +53,22 @@ export class CrudService extends DataService  {
 	}
 
 	save(data: any, model: string): Observable<any>  {
+		console.log(data)
+		if (data.id == null) {
+			return this.create(data, model);
+		} else {
+			return this.update(data, model);
+		}
 
+	}
+
+	create(data: any, model: string): Observable<any>  {
+		console.log("Create ", data)
 		return new Observable(observer => {
 			this.httpPost(model, data).subscribe({
 				next: (res: any) => {
+					res.meta = { operation: 'create' }
 					observer.next(res);
-					console.log(res)
 				},
 				error: (error: any) => {
 					console.log("Error on crudService ", error);
@@ -66,7 +76,26 @@ export class CrudService extends DataService  {
 				},
 				complete: () => {
 					observer.complete();
-					console.log('completed')
+				}
+			});
+		});
+
+	}
+
+	update(data: any, model: string): Observable<any>  {
+		console.log("Update ", data)
+		return new Observable(observer => {
+			this.httpPut(model+'/'+data.id, data).subscribe({
+				next: (res: any) => {
+					res.meta = { operation: 'update' }
+					observer.next(res);
+				},
+				error: (error: any) => {
+					console.log("Error on crudService ", error);
+					observer.error(error);
+				},
+				complete: () => {
+					observer.complete();
 				}
 			});
 		});

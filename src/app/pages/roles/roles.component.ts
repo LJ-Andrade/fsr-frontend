@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
 import { Validators } from '@angular/forms';
 import { CrudBase } from '@src/app/components/crud/crud-base';
 import { CrudManagerComponent } from '@src/app/components/crud/crud-manager.component';
 import { CrudFormComponent } from '@src/app/components/crud/crud-form.component';
+import { SectionConfig, ListData, ListConfig } from '@src/app/interfaces/crud.interface';
 
 
 @Component({
@@ -40,6 +40,11 @@ export class RolesComponent extends CrudBase  {
     }
 
     override formFields: any[] = [
+
+        { name: 'id', label: 'Id', value: '', placeholder: 'Enter the role id', type: 'text', class: 'col-span-12',
+            hidden: true,
+            validators: [ Validators.required, Validators.minLength(1), Validators.maxLength(11)] },
+
         { name: 'name', label: 'Name', value: '', placeholder: 'Enter the role name', type: 'text', class: 'col-span-12',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
     ]
