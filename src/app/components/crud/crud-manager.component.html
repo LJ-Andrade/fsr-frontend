@@ -23,97 +23,100 @@
 	</ng-template>
 </p-toolbar>
 
-<div *ngIf="listVisibility" class="table-responsive">
-	@if(!apiDataResponse().loading){
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col" class="checkbox-col">
-						<p-checkbox #mainCheckbox [binary]="true" (change)="toggleAllRows($event)"></p-checkbox>
-					</th>
-					@for(column of listData; track $index) {
-						@if(!column.hidden && !column.hideOnList) {
-							<th scope="col">
-								{{ column.text }}
-							</th>
-						}
-					}
-					<th scope="col"></th>
-				</tr>
-			</thead>
-			<tbody>
-				@for(record of apiDataResponse().results; track record.id; let odd = $odd) {
-					<tr class="table-row" [class.odd]="odd" [ngClass]="{ 'row-selected': record.selected } ">
-						<td class="checkbox-col">
-							<p-checkbox [(ngModel)]="record.selected" (onChange)="toggleRowSelection(record)" [binary]="true"></p-checkbox>
-						</td>
-						@for(item of listData; track $index; let odd = $odd) {
-							@if(!item.hidden && !item.hideOnList) {
-								@if(item.relation) {
-									<!-- Relation Data -->
-									<td [ngClass]="item['columnClass']">
-										@if(item.showAsBadge) {
-											<p-badge *ngIf="record[item.relationName] != ''" 
-												[value]="record[item.relationName]" 
-												badgeSize="small" severity="success" 
-											/>
-										} @else {
-											{{ record[item.relationName] }}
-										}
-
-									</td>
-
-								} @else {
-									<!-- Main Data -->
-									<td [ngClass]="item['columnClass']">
-										@if(item.showAsBadge) {
-											<p-badge *ngIf="record[item.name] != ''" 
-												[value]="record[item.name]" 
-												badgeSize="small" severity="success" 
-											/>
-										} @else {
-											{{ record[item.name] }}
-										}
-									</td>
-								} 
+<div *ngIf="listVisibility">
+	<div class="table-responsive">
+		@if(!apiDataResponse().loading){
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col" class="checkbox-col">
+							<p-checkbox #mainCheckbox [binary]="true" (change)="toggleAllRows($event)"></p-checkbox>
+						</th>
+						@for(column of listData; track $index) {
+							@if(!column.hidden && !column.hideOnList) {
+								<th scope="col">
+									{{ column.text }}
+								</th>
 							}
 						}
-						<!-- ROW ACTIONS -->
-						<td class="action-column">
-							<!-- EDIT ACTION -->
-						
-							@if(listConfig.unEditableIds && !listConfig.unEditableIds.includes(+record.id)) {
-								<p-button styleClass="mr-3 small-action-button" icon="pi pi-pencil" [rounded]="true" [text]="true"
-									[raised]="true" size="small" 
-									(onClick)="emitRequestEdit(record)"
-								/>
-							}
-
-							<!-- DELETE ACTION -->
-							@if(listConfig.unEditableIds && !listConfig.unDeleteableIds.includes(+record.id)) {
-								<p-button styleClass="small-action-button" icon="pi pi-trash" [rounded]="true" [text]="true"
-									[raised]="true" severity="danger" size="small"
-									(onClick)="deleteSingleRecord(record)" />
-							} 
-						</td>
+						<th scope="col"></th>
 					</tr>
-				}
+				</thead>
+				<tbody>
+					@for(record of apiDataResponse().results; track record.id; let odd = $odd) {
+						<tr class="table-row" [class.odd]="odd" [ngClass]="{ 'row-selected': record.selected } ">
+							<td class="checkbox-col">
+								<p-checkbox [(ngModel)]="record.selected" (onChange)="toggleRowSelection(record)" [binary]="true"></p-checkbox>
+							</td>
+							@for(item of listData; track $index; let odd = $odd) {
+								@if(!item.hidden && !item.hideOnList) {
+									@if(item.relation) {
+										<!-- Relation Data -->
+										<td [ngClass]="item['columnClass']">
+											@if(item.showAsBadge) {
+												<p-badge *ngIf="record[item.relationName] != ''" 
+													[value]="record[item.relationName]" 
+													badgeSize="small" severity="success" 
+												/>
+											} @else {
+												{{ record[item.relationName] }}
+											}
 
-			</tbody>
-		</table>
-	} @else {
-		<app-skeleton [rowsAmount]="5"></app-skeleton>
-	}
+										</td>
+
+									} @else {
+										<!-- Main Data -->
+										<td [ngClass]="item['columnClass']">
+											@if(item.showAsBadge) {
+												<p-badge *ngIf="record[item.name] != ''" 
+													[value]="record[item.name]" 
+													badgeSize="small" severity="success" 
+												/>
+											} @else {
+												{{ record[item.name] }}
+											}
+										</td>
+									} 
+								}
+							}
+							<!-- ROW ACTIONS -->
+							<td class="action-column">
+								<!-- EDIT ACTION -->
+							
+								@if(listConfig.unEditableIds && !listConfig.unEditableIds.includes(+record.id)) {
+									<p-button styleClass="mr-3 small-action-button" icon="pi pi-pencil" [rounded]="true" [text]="true"
+										[raised]="true" size="small" 
+										(onClick)="emitRequestEdit(record)"
+									/>
+								}
+
+								<!-- DELETE ACTION -->
+								@if(listConfig.unEditableIds && !listConfig.unDeleteableIds.includes(+record.id)) {
+									<p-button styleClass="small-action-button" icon="pi pi-trash" [rounded]="true" [text]="true"
+										[raised]="true" severity="danger" size="small"
+										(onClick)="deleteSingleRecord(record)" />
+								} 
+							</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		} @else {
+			<app-skeleton [rowsAmount]="5"></app-skeleton>
+		}
+	</div>
 	<p-paginator 
 		*ngIf="apiDataResponse().pagination"
-		[rows]="apiDataResponse().pagination?.list_regs_per_page"
+		[first]="0"
+		[rows]="apiDataResponse().pagination?.list_regs_per_page "
 		[rowsPerPageOptions]="[5, 10, 20]"
-		[showCurrentPageReport]="true"
 		[totalRecords]="apiDataResponse().pagination?.total"
-		(onPageChange)="onPageChange($event)"
+		[showCurrentPageReport]="true"
+		(onPageChange)="onPageChange($event.page, $event.rows)"
+		[alwaysShow]="true"
 	></p-paginator>
-</div>
-
+</div>  <!-- End List container -->
 
 <!-- CREATION FORM  -->
 <div class="flex justify-center" *ngIf="creationFormVisibility">

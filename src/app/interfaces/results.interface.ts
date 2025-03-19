@@ -9,6 +9,7 @@ export interface Pagination<T> {
     next_page_url: string | null;
     path: string;
     list_regs_per_page: number;
+    per_page: number;
     prev_page_url: string | null;
     to: number;
     total: number;

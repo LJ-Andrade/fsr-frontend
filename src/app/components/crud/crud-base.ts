@@ -1,45 +1,34 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Injectable, OnInit, inject } from '@angular/core';
 import { CrudService } from '@src/app/services/crud/crud.service';
-import { ToolbarModule } from 'primeng/toolbar';
 import { ListConfig, ListData, SectionConfig } from './old/crud.component';
-import { Form, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
-@Component({
-	selector: 'app-crud-base',
-	imports: [ ToolbarModule ],
-	standalone: true,
-	template: `<div>Do not instantiate this class</div>`,
+
+@Injectable({
+    providedIn: 'root'
 })
 
-export class Crud implements OnInit {
+export class CrudBase implements OnInit {
 
 	crudService: CrudService = inject(CrudService);
 
 	listVisibility: boolean = true;
 	batchDeleteButtonVisible: boolean = false;
 	creationFormVisibility: boolean = false;
+	currentPage: number = 1;
 
 	relations: { [key: string]: any } = {};
 	
     ngOnInit(): void {
 		// this.toggleCreationForm(); // DEBUG
-
-        this.crudService.read(this.sectionConfig.model)
-
-		this.formFields.forEach(field => {
-			if (field.options && field.options.name) {
-				this.relations[field.options.name] = {};
-			}
-		});
-
-		this.buildSectionForm();
+       this.fetchData(2);
+	   this.buildSectionForm();
     }
 
 	ngOnDestroy(): void {
 		this.clearCreationForm();
 		this.crudService.clearResults();
 	}
-
 
 	sectionConfig: SectionConfig = {
 		model: '',
@@ -55,7 +44,31 @@ export class Crud implements OnInit {
 	sectionForm: FormGroup = new FormGroup({});
 	currentRecord: any = {};
 
-	
+
+	fetchData(page: number = 1) {
+		
+		if (page > 1) {
+			this.currentPage = page;
+		}
+		// if (event && 'page' in event) {
+		// 	if (typeof event.page === 'number' && !isNaN(event.page)) {
+		// 		this.currentPage = event.page;
+		// 	}
+		// }
+
+		let perPage: number = 10;
+		if (localStorage.getItem('perPage')) {
+			perPage = parseInt(localStorage.getItem('perPage')!);
+		}
+		
+		let url: string = 
+			this.sectionConfig.model +
+			'?page=' + this.currentPage + 
+			'&list_regs_per_page=' + perPage;
+			
+		this.crudService.read(url)
+	}
+
     fetchRelation(model: string, field: string) {
         this.crudService.dataService.getModelData(model).subscribe(
             data => {
@@ -66,6 +79,13 @@ export class Crud implements OnInit {
     }
 
 	buildSectionForm() {
+		this.formFields.forEach(field => {
+			if (field.options && field.options.name) {
+				this.relations[field.options.name] = {};
+			}
+		});
+
+
 		this.sectionForm = new FormGroup({});
 
 		this.formFields.forEach(field => {
@@ -97,7 +117,7 @@ export class Crud implements OnInit {
 		.subscribe({
 			next: (res: any) => {
 				this.crudService.notificationService.success('El registro se ha creado correctamente', '');
-				this.crudService.read(this.sectionConfig.model)
+				this.fetchData();
 			},
 			error: (error: any) => {
 				let errors = error.error;
@@ -116,8 +136,6 @@ export class Crud implements OnInit {
 			}
 		});
 	}
-
-
 
 	validateForm(): boolean {
 		if (!this.sectionForm.valid) {

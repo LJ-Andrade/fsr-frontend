@@ -31,9 +31,7 @@ export class CrudService extends DataService  {
 		this.#state.set({loading: true, results: [], pagination: undefined, error: ''})
 	}
 
-	public read(modelName: string, url: string | null = null) {
-		if (!url)
-			url = modelName
+	public read(url: string) {
 		
 		this.dataService.httpFetch(url)
 			.subscribe({

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
 import { Validators } from '@angular/forms';
-import { Crud } from '@src/app/components/crud/crud';
+import { CrudBase } from '@src/app/components/crud/crud-base';
 import { CrudManagerComponent } from '@src/app/components/crud/crud-manager.component';
 import { CrudFormComponent } from '@src/app/components/crud/crud-form.component';
 
@@ -14,7 +14,7 @@ import { CrudFormComponent } from '@src/app/components/crud/crud-form.component'
     templateUrl: './roles.component.html'
 })
 
-export class RolesComponent extends Crud  {
+export class RolesComponent extends CrudBase  {
     
     override ngOnInit() {
         super.ngOnInit()

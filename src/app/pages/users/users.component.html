@@ -6,7 +6,7 @@
     [listVisibility]="listVisibility"
     [creationFormVisibility]="creationFormVisibility"
     (rowsSelected)="onRowsSelected($event)"
-    (requestRead)="crudService.read($event)"
+    (requestRead)="fetchData($event)"
     (requestCreationForm)="toggleCreationForm()"
     (requestList)="toggleList()"
     (requestEdit)="editRecord($event)">

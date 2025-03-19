@@ -38,7 +38,7 @@ export class CrudManagerComponent {
 	@Output() rowsSelected = new EventEmitter<any[]>();
 	@Output() requestCreationForm = new EventEmitter<void>();
 	@Output() requestList = new EventEmitter<void>();
-	@Output() requestRead = new EventEmitter<string>();
+	@Output() requestRead = new EventEmitter<number>();
 	@Output() requestEdit = new EventEmitter<any>();
 	
 	
@@ -49,8 +49,15 @@ export class CrudManagerComponent {
 	displayDeleteConfirmation: boolean = false;
 	recordsToDelete: any[] = [];
 	creationFormTitle: string = 'Creating ' + this.sectionConfig.nameSingular;
+	currentPage: number = 1;
+	// ngOnInit() {
+	// 	this.
+	// }
 	
-	
+	emitRequestRead() {
+		this.requestRead.emit(this.currentPage)
+	}
+
 	emitRequestList() {
 		this.requestList.emit()
 	}
@@ -152,7 +159,7 @@ export class CrudManagerComponent {
 			this.crudService.delete(id, this.sectionConfig.model)
 			.subscribe({
 				next: (res: any) => {
-					this.crudService.read(this.sectionConfig.model);
+					this.emitRequestRead();
 					resolve(true);
 				},
 				error: (error: any) => {
@@ -179,12 +186,15 @@ export class CrudManagerComponent {
 
 //#region Pagination
 
-	onPageChange(event: PaginatorState) {
-		if (event.page !== undefined && event.rows !== undefined) {
-			const page = event.page + 1;
-			const perPage = event.rows;
-			const url = `${this.sectionConfig.model}?page=${page}&per_page=${perPage}`;
-			this.requestRead.emit(url)
+
+	onPageChange(page?: number, rows?: number) {
+		if (page !== undefined && rows !== undefined) {
+			const currentPage = page + 1;
+			const perPage = rows;
+			const url = `${this.sectionConfig.model}?page=${currentPage}&list_regs_per_page=${perPage}`;
+			localStorage.setItem('perPage', perPage.toString());
+			this.currentPage = currentPage;
+			this.requestRead.emit(currentPage)
 		}
 	}
 

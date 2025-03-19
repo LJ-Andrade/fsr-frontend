@@ -8,6 +8,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 @Injectable({
     providedIn: 'root'
 })
+
 export class DataService {
     private http = inject(HttpClient);
 
@@ -60,6 +61,7 @@ export class DataService {
 	}
 
     makePagination<T>(paginationData: Pagination<T>): any {
+		console.log(paginationData)
 		return {
 			current_page: paginationData.current_page,
 			first_page_url: paginationData.first_page_url,
@@ -69,7 +71,7 @@ export class DataService {
 			links: paginationData.links,
 			next_page_url: paginationData.next_page_url,
 			path: paginationData.path,
-			list_regs_per_page: paginationData.list_regs_per_page,
+			list_regs_per_page: paginationData.per_page,
 			prev_page_url: paginationData.prev_page_url,
 			to: paginationData.to,
 			total: paginationData.total
