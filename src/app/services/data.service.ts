@@ -69,7 +69,7 @@ export class DataService {
 			links: paginationData.links,
 			next_page_url: paginationData.next_page_url,
 			path: paginationData.path,
-			per_page: paginationData.per_page,
+			list_regs_per_page: paginationData.list_regs_per_page,
 			prev_page_url: paginationData.prev_page_url,
 			to: paginationData.to,
 			total: paginationData.total

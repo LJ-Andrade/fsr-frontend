@@ -1,18 +1,27 @@
-<app-crud
+<app-crud-manager
+    [apiDataResponse]="crudService.apiDataResponse"
     [sectionConfig]="sectionConfig"
     [listData]="listData"
-    [dataRelations]="dataRelations"
     [listConfig]="listConfig"
-    [formFields]="formFields"
-    >
-</app-crud>
+    [listVisibility]="listVisibility"
+    [creationFormVisibility]="creationFormVisibility"
+    (rowsSelected)="onRowsSelected($event)"
+    (requestRead)="crudService.read($event)"
+    (requestCreationForm)="toggleCreationForm()"
+    (requestList)="toggleList()"
+    (requestEdit)="editRecord($event)">
+    
+	<div mainForm>
+        <div>
+            {{ sectionForm.value | json }}
+        </div>
+		<app-crud-form
+			[sectionForm]="sectionForm"
+			[formFields]="formFields"
+			[formSize]="sectionConfig.formSize"
+			[loading]="crudService.apiDataResponse().loading"
+			(submitFormEvent)="submitForm()"
+		/>
+	</div>
 
-<!-- CUSTOM FORM EXAMPLE -->
-<!-- [customForm]="customFormTemplate" ADD THIS TO app-crud-->
-
-<!-- <ng-template #customFormTemplate>
-  <form>
-    <input type="text" placeholder="Entrada personalizada" />
-    <button>Enviar Personalizado</button>
-  </form>
-</ng-template> -->
+</app-crud-manager>

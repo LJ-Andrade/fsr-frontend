@@ -8,7 +8,7 @@ import { NotificationService } from '@src/app/services/notification.service';
 @Component({
 	selector: 'app-dashboard',
 	standalone: true,
-	imports: [RouterModule, PanelModule, CardModule, ButtonModule], // Corregido
+	imports: [ RouterModule, PanelModule, CardModule, ButtonModule ], // Corregido
 	templateUrl: './dashboard.component.html',
 	styleUrls: ['./dashboard.component.sass']
 })

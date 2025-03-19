@@ -1,41 +1,46 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CrudComponent, SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
+import { SectionConfig, ListData, ListConfig } from '@src/app/components/crud/old/crud.component';
 import { Validators } from '@angular/forms';
+import { Crud } from '@src/app/components/crud/crud';
+import { CrudManagerComponent } from '@src/app/components/crud/crud-manager.component';
+import { CrudFormComponent } from '@src/app/components/crud/crud-form.component';
+
 
 @Component({
-	selector: 'app-roles',
-	imports: [ CommonModule, CrudComponent ],
-	templateUrl: './roles.component.html'
+    selector: 'app-roles',
+    standalone: true,
+    imports: [ CommonModule, CrudManagerComponent, CrudFormComponent ],
+    templateUrl: './roles.component.html'
 })
 
-export class RolesComponent {
-	sectionConfig: SectionConfig = {
-		model: 'roles',
-		icon: 'pi pi-crown',
-		nameSingular: 'role',
-		namePlural: 'roles',
+export class RolesComponent extends Crud  {
+    
+    override ngOnInit() {
+        super.ngOnInit()
+    }
+
+    override sectionConfig: SectionConfig = {
+        model: 'roles',
+        icon: 'pi pi-crown',
+        nameSingular: 'role',
+        namePlural: 'roles',
         formSize: 'SMALL',
-	}
+    }
 
-	listData: ListData[] =
-	[
-		{ name: 'id', text: 'Id', columnClass: 'w-3', hideOnCreation: false, hideOnEdition: false,
-			unDeleteableIds: [ 1, 2 ], unEditableIds: [ 1, 2 ] },
-		{ name: 'name', text: 'Name' },
-	];
+    override listData: ListData[] = [
+        { name: 'id', text: 'Id', columnClass: 'w-3', hideOnCreation: false, hideOnEdition: false, 
+            unDeleteableIds: [ 1, 2 ], unEditableIds: [ 1, 2 ] },
+        { name: 'name', text: 'Nombre' }
+    ];
 
-	listConfig: ListConfig = {
+    override listConfig: ListConfig = {
         unDeleteableIds: [ 1, 2 ],
         unEditableIds: [ 1, 2 ]
     }
 
-	formFields: any[] = [
-
-		{
-			name: 'name', label: 'Role Name', value: '', placeholder: 'Enter the name of the role', type: 'text', class: 'col-span-12',
-			validators: [Validators.required, Validators.minLength(3), Validators.maxLength(50)]
-		},
-
-	]
+    override formFields: any[] = [
+        { name: 'name', label: 'Name', value: '', placeholder: 'Enter the role name', type: 'text', class: 'col-span-12',
+            validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
+    ]
 }

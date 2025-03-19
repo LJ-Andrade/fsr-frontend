@@ -20,12 +20,12 @@ export class Crud implements OnInit {
 	creationFormVisibility: boolean = false;
 
 	relations: { [key: string]: any } = {};
-
+	
     ngOnInit(): void {
 		// this.toggleCreationForm(); // DEBUG
 
         this.crudService.read(this.sectionConfig.model)
-		
+
 		this.formFields.forEach(field => {
 			if (field.options && field.options.name) {
 				this.relations[field.options.name] = {};
@@ -34,6 +34,11 @@ export class Crud implements OnInit {
 
 		this.buildSectionForm();
     }
+
+	ngOnDestroy(): void {
+		this.clearCreationForm();
+		this.crudService.clearResults();
+	}
 
 
 	sectionConfig: SectionConfig = {
@@ -75,10 +80,6 @@ export class Crud implements OnInit {
 	}
 
 	updateFormFieldsWithData(fieldName: string, data: any[]) {
-        // console.log('Updating field:', fieldName);
-		// console.log('Available fields:', this.formFields);
-        // console.log('Found field:', this.formFields.find(f => f.name === fieldName));
-        // console.log('New data:', data);
         const field = this.formFields.find(f => f.name === fieldName);
         if (field && field.options) {
             field.options.data = data;
@@ -86,16 +87,6 @@ export class Crud implements OnInit {
         }
     }
 
-	toggleCreationForm(visibility: boolean = true): void {
-		
-		if(visibility) {
-			this.creationFormVisibility = true;
-			this.toggleList(false)
-		} else {
-			this.creationFormVisibility = false;
-			this.clearCreationForm();
-		}
-	}
 
 	submitForm() {
 		if(!this.validateForm()) {
@@ -126,6 +117,8 @@ export class Crud implements OnInit {
 		});
 	}
 
+
+
 	validateForm(): boolean {
 		if (!this.sectionForm.valid) {
 			this.sectionForm.markAllAsTouched();
@@ -136,14 +129,74 @@ export class Crud implements OnInit {
 		}
 	}
 
+	toggleCreationForm(visibility: boolean = true, clearForm: boolean = false): void {
+		this.hideOtherComponents()
+		if(visibility) {
+			this.creationFormVisibility = true;
+		} else {
+			this.creationFormVisibility = false;
+			if (clearForm) {
+				this.clearCreationForm();
+			}
+		}
+	}
+
+
+	editRecord(record: any) {
+		this.toggleEditForm(true, record);
+
+	}
+
+	toggleEditForm(visibility: boolean = true, record: any = null): void {
+		this.hideOtherComponents()
+		
+		if(visibility) {
+			this.creationFormVisibility = true;
+			// this.currentRecord = record;
+			this.fillFormWithRecordData(record);
+		} else {
+			this.creationFormVisibility = false;
+			this.clearCreationForm();
+		}
+	}
+	
+	fillFormWithRecordData(record: any) {
+		// console.log('Record ', record)
+		console.log('Form ', this.sectionForm)
+		// this.sectionForm.patchValue(record);
+		console.log("form fields ", this.formFields)
+		this.formFields.forEach(field => {
+			
+			if(field.isRelation) {
+				// console.log(this.sectionForm.get(field.name))
+				// console.log("Record ", record)
+				// console.log("Field name ", field.options.name)
+				// console.log('Relation ', field.name, record[field.options.name][0])
+				if (record[field.options.name][0] == undefined) {
+					this.sectionForm.get(field.name)?.setValue(null);
+				} else {
+					this.sectionForm.get(field.name)?.setValue(record[field.options.name][0]);
+				}
+			} else {
+				// console.log("normal field")
+				this.sectionForm.get(field.name)?.setValue(record[field.name]);
+			}
+		});
+	}
+	
 
 	toggleList(visibility: boolean = true): void {
+		this.hideOtherComponents()
 		if(visibility) {
 			this.listVisibility = true;
-			this.toggleCreationForm(false);
 		} else {
 			this.listVisibility = false;
 		}
+	}
+
+	hideOtherComponents() {
+		this.creationFormVisibility = false;
+		this.listVisibility = false;
 	}
 
 	onRowsSelected(rows: any[]): void {
@@ -156,6 +209,9 @@ export class Crud implements OnInit {
 
 	clearCreationForm(): void {
 		this.sectionForm.reset();
+		this.sectionForm.clearValidators();
+		this.sectionForm.updateValueAndValidity();
 	}
+
 		
 }

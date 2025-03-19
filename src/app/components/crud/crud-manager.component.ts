@@ -1,7 +1,7 @@
-import { Component, computed, ContentChild, EventEmitter, Input, Output, Signal, signal, TemplateRef } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -11,66 +11,66 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { PanelModule } from 'primeng/panel';
 import { Badge } from 'primeng/badge';
+import { NotificationService } from '@src/app/services/notification.service';
+import { CrudService } from '@src/app/services/crud/crud.service';
 
 @Component({
-    selector: 'app-crud-manager',
-    templateUrl: './crud-manager.component.html',
-    standalone: true,
-    imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule, 
-		FormsModule, PaginatorModule, ButtonModule, DialogModule, PanelModule, Badge ]
+	selector: 'app-crud-manager',
+	templateUrl: './crud-manager.component.html',
+	standalone: true,
+	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule, 
+		FormsModule, PaginatorModule, ButtonModule, DialogModule, PanelModule, Badge 
+	]
 })
 
 export class CrudManagerComponent {
 
+	notificationService: NotificationService = inject(NotificationService);
+	crudService: CrudService = inject(CrudService);
+
 	@Input() sectionConfig: SectionConfig = { model: '', icon: '', nameSingular: '', namePlural: '', formSize: 'LARGE' };
-    @Input() listData: any[] = [];
-    @Input() listConfig: any = {};
-    @Input() apiDataResponse!: Signal<Results<any>>
+	@Input() listData: any[] = [];
+	@Input() listConfig: any = {};
+	@Input() apiDataResponse!: Signal<Results<any>>
 	@Input() listVisibility: boolean = true;
 	@Input() creationFormVisibility: boolean = true;
 
 	@Output() rowsSelected = new EventEmitter<any[]>();
 	@Output() requestCreationForm = new EventEmitter<void>();
-	@Output() toggleList = new EventEmitter<void>();
+	@Output() requestList = new EventEmitter<void>();
 	@Output() requestRead = new EventEmitter<string>();
+	@Output() requestEdit = new EventEmitter<any>();
 	
-    selectedRows = signal<any[]>([]);
-    selectedRowsCount = computed(() => this.selectedRows().length);
+	
+	selectedRows = signal<any[]>([]);
+	selectedRowsCount = computed(() => this.selectedRows().length);
 	activeData: any = {}
-    currentData: any[] = [];
+	currentData: any[] = [];
 	displayDeleteConfirmation: boolean = false;
 	recordsToDelete: any[] = [];
+	creationFormTitle: string = 'Creating ' + this.sectionConfig.nameSingular;
+	
+	
+	emitRequestList() {
+		this.requestList.emit()
+	}
 
 	emitRequestCreationForm() {
-		this.requestCreationForm.emit();
-		this.toggleListVisibility(false)
+		this.requestCreationForm.emit()
+		this.creationFormTitle = 'Creating ' + this.sectionConfig.nameSingular;	
 	}
-
-    //#region  Row Selection
-
-	// toggleRowSelection(row: any): void {
-	// 	if(this.selectedRowsCount() === 1) {
-	// 		this.activeData = row;
-	// 	} else {
-	// 		this.activeData = {}
-	// 	}
-	// 	this.updateSelected();
-	// }
-
-	toggleListVisibility(visibility: boolean = true): void {
-		if (visibility) {
-			this.listVisibility = true;
-			this.toggleList.emit();
-		} else {
-			this.listVisibility = false;
-		}
+	
+	emitRequestEdit(record: any) {
+		this.requestEdit.emit(record);
+		this.creationFormTitle = 'Editing ' + this.sectionConfig.nameSingular;	
 	}
+//#region Row Selection
 	
 	toggleRowSelection(row: any): void {
 		this.updateSelected();
 		this.rowsSelected.emit(this.selectedRows());
-	  }
-
+	}
+	
 
 	toggleAllRows(event: any): void {
 		if (event.target.checked) {
@@ -85,9 +85,8 @@ export class CrudManagerComponent {
 		this.rowsSelected.emit(this.selectedRows());
 	}
 
-    updateSelected(): void {
+	updateSelected(): void {
 		this.selectedRows.set(this.apiDataResponse().results.filter(row => row.selected));
-		console.log("Selected Rows ", this.selectedRows())
 	}
 
 	deselectAllRows(): void {
@@ -96,22 +95,28 @@ export class CrudManagerComponent {
 		this.rowsSelected.emit(this.selectedRows());
 	}
 
-    // deselectAllRows(): void {
+//#endregion
 
-	// 	this.currentData.forEach(row => {
-	// 		row.selected = false;
-	// 	});
 
-	// 	this.selectedRows.set([]);
-	// }
+//#region Edit
+
+
+// editRecord(record: any) {
+// 	console.log(record)
+// 	this.activeData = record;
+// 	this.requestEdit.emit(this.activeData);
+// 	// this.displayEdit = true;
+// }
+
+//#endregion Edit
+
 
 //#region Delete
 
-
-    addSelectedToDeleteQueue() {
+	addSelectedToDeleteQueue() {
 		this.recordsToDelete = []
 		this.recordsToDelete = this.selectedRows()
-		// this.showDeleteConfirmation()
+		this.showDeleteConfirmation()
 	}
 
 	deleteSingleRecord(record: {}) {
@@ -122,11 +127,10 @@ export class CrudManagerComponent {
 
 	async confirmDelete() {
 		let allSuccessful: boolean = true;
-		console.log("Records to delete", this.recordsToDelete)
 
 		for (let record of this.recordsToDelete) {
 			if(this.listConfig.unDeleteableIds.includes(record['id'])) {
-				// this.crudService.notificationService.error('You cannot delete the record: ' + record.name, '');
+				this.notificationService.error('You cannot delete the record: ' + record.name, '');
 			} else {
 				const success = await this.performDelete(record['id']);
 				if (!success) {
@@ -136,29 +140,29 @@ export class CrudManagerComponent {
 		}
 
 		if (allSuccessful) {
-			// this.crudService.notificationService.success('All records were successfully deleted', '');
+			this.notificationService.success('All records were successfully deleted', '');
 			this.selectedRows.set([])
 		} else {
-			// this.crudService.notificationService.error('Some records could not be deleted', '');
+			this.notificationService.error('Some records could not be deleted', '');
 		}
 	}
 
 	performDelete(id: number): Promise<boolean> {
 		return new Promise((resolve) => {
-			// this.crudService.delete(id, this.sectionConfig.model)
-			// .subscribe({
-			// 	next: (res: any) => {
-			// 		this.crudService.read(this.sectionConfig.model);
-			// 		resolve(true);
-			// 	},
-			// 	error: (error: any) => {
-			// 		this.crudService.notificationService.error('Error deleting the record', '');
-			// 		resolve(false);
-			// 	},
-			// 	complete: () => {
-			// 		this.closeDeleteConfirmation();
-			// 	}
-			// });
+			this.crudService.delete(id, this.sectionConfig.model)
+			.subscribe({
+				next: (res: any) => {
+					this.crudService.read(this.sectionConfig.model);
+					resolve(true);
+				},
+				error: (error: any) => {
+					this.crudService.notificationService.error('Error deleting the record', '');
+					resolve(false);
+				},
+				complete: () => {
+					this.closeDeleteConfirmation();
+				}
+			});
 		});
 
 	}
@@ -173,6 +177,8 @@ export class CrudManagerComponent {
 
 //#endregion Delete
 
+//#region Pagination
+
 	onPageChange(event: PaginatorState) {
 		if (event.page !== undefined && event.rows !== undefined) {
 			const page = event.page + 1;
@@ -181,6 +187,8 @@ export class CrudManagerComponent {
 			this.requestRead.emit(url)
 		}
 	}
+
+//#endregion Pagination
 
 }
 

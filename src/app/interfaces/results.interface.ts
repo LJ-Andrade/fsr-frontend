@@ -8,7 +8,7 @@ export interface Pagination<T> {
     links: Link[];
     next_page_url: string | null;
     path: string;
-    per_page: number;
+    list_regs_per_page: number;
     prev_page_url: string | null;
     to: number;
     total: number;

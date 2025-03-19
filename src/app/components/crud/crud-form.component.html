@@ -10,31 +10,35 @@
             <div class="grid grid-cols-12 gap-4">
 
                 @for(field of formFields; track $index) {
-                    @switch (field.type) {
+                    @if(!field.hidden) {
+                    
+                        @switch (field.type) {
 
-                        @case('text') {
-                            <div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
-                                <p-iftalabel>
-                                    <input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
-                                    <label for="username">{{ field.label }}</label>
-                                </p-iftalabel>
-                                <app-field-error [field]="sectionForm.get(field.name)"/>
-                            </div>
-                        }
+                            @case('text') {
+                                <div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+                                    <p-iftalabel>
+                                        <input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
+                                        <label for="username">{{ field.label }}</label>
+                                    </p-iftalabel>
+                                    <app-field-error [field]="sectionForm.get(field.name)"/>
+                                </div>
+                            }
 
-                        @case('select') {
-                            <div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
-                                <p-iftalabel class="w-full">
-                                    <p-select class="w-full"
-                                        [formControlName]="field.name"
-                                        [options]="field.options.data"
-                                        [optionLabel]="field.options.valueName"
-                                        [placeholder]="field.placeholder"
-                                    />
-                                    <label for="dd-city">{{ field.label }}</label>
-                                </p-iftalabel>
-                                <app-field-error [field]="sectionForm.get(field.name)" />
-                            </div>
+                            @case('select') {
+                                <div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+                                    <p-iftalabel class="w-full">
+                                        <p-select class="w-full"
+                                            [formControlName]="field.name"
+                                            [options]="field.options.data"
+                                            [optionLabel]="field.options.valueName"
+                                            [placeholder]="field.placeholder"
+                                            [optionValue]="field.options.valueName"
+                                        />
+                                        <label for="dd-city">{{ field.label }}</label>
+                                    </p-iftalabel>
+                                    <app-field-error [field]="sectionForm.get(field.name)" />
+                                </div>
+                            }
                         }
                     }
                 }   
