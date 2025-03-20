@@ -19,6 +19,16 @@ export interface ListData {
 	relationName?: any;
 	relationFieldName?: any;
 
+	search?: {
+		placeholder: string;
+		type?: string;
+		options?: {
+			name: string;
+			valueName: string;
+			data: any[];
+		}
+	}
+
 	// manyRelations?: boolean;
 	// selectedRows?: boolean;
 	// hideOnShow?: boolean;

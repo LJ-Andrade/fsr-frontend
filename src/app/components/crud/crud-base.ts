@@ -21,9 +21,10 @@ export class CrudBase implements OnInit {
 	
     ngOnInit(): void {
 		// this.toggleCreationForm(); // DEBUG
-    	// this.fetchData(1, {'first_name': 'Example', 'user': 'admin'}); // DEBUG Search Example 
-	   this.fetchData();
-	   this.buildSectionForm();
+    	// this.fetchData({'first_name': 'Example', 'user': 'admin'}); // DEBUG Search Example 
+	   	this.fetchData();
+	   	this.buildSectionForm();
+		this.buildSearchForm();
     }
 
 	ngOnDestroy(): void {
@@ -43,14 +44,15 @@ export class CrudBase implements OnInit {
 	listConfig: ListConfig = { unDeleteableIds: [], unEditableIds: [] }
 	formFields: any[] = [];
 	sectionForm: FormGroup = new FormGroup({});
+	searchForm: FormGroup = new FormGroup({});
 	currentRecord: any = {};
 
 
-	fetchData(page: number = 1, params: any = {}) {
+	fetchData(params: any = {}) {
 		
-		if (page > 1) {
-			this.currentPage = page;
-		}
+		// if (page > 1) {
+		// 	this.currentPage = page;
+		// }
 
 		let perPage: number = 10;
 		if (localStorage.getItem('perPage')) {
@@ -58,7 +60,7 @@ export class CrudBase implements OnInit {
 		}
 		
 		params['list_regs_per_page'] = perPage;
-		params['page'] = this.currentPage;
+		this.currentPage = params['page']
 		
 		this.crudService.read(this.sectionConfig.model, params)
 	}
@@ -67,7 +69,8 @@ export class CrudBase implements OnInit {
         this.crudService.dataService.getModelData(model).subscribe(
             data => {
                 this.relations[model] = data; 
-                this.updateFormFieldsWithData(field, data); 
+                this.updateFormFieldsWithData(field, data);
+				this.updateSearchFormWithData(model, data);
             }
         );
     }
@@ -93,12 +96,34 @@ export class CrudBase implements OnInit {
 
 	}
 
+	buildSearchForm() {
+		this.listData.forEach((field: any) => {
+			if (field.search) {
+				this.searchForm.addControl(
+					field.name,
+					new FormControl(null))
+			}
+		});
+
+		console.log(this.searchForm)
+	}
+
+
 	updateFormFieldsWithData(fieldName: string, data: any[]) {
         const field = this.formFields.find(f => f.name === fieldName);
         if (field && field.options) {
             field.options.data = data;
             this.buildSectionForm(); // Rebuilds the form with new data
         }
+    }
+
+	updateSearchFormWithData(fieldName: string, data: any[]) {
+        this.listData.forEach((field: any) => {
+			if (field.name == fieldName) {
+				field.search.options.data = data;
+				this.buildSearchForm(); // Rebuilds the form with new data
+			}
+        });
     }
 
 
@@ -112,7 +137,6 @@ export class CrudBase implements OnInit {
 			next: (res: any) => {
 				let message: string = '';
 				if (res.meta && res.meta.operation == 'update') {
-					console.log("Update")
 					message = 'The record has been updated successfully';
 				} else {
 					message = 'The record has been created successfully';

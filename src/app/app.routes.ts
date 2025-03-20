@@ -9,6 +9,7 @@ import DashboardComponent from './pages/dashboard/dashboard.component';
 import { ExamplesComponent } from './pages/examples/examples.component';
 import { UsersComponent } from './pages/users/users.component';
 import { RolesComponent } from './pages/roles/roles.component';
+import { CountriesComponent } from './pages/countries/countries.component';
 
 /**
  * App routes
@@ -74,6 +75,14 @@ export const routes: Routes = [
 						component: RolesComponent,
 						data: {
 							title: 'Roles',
+							icon: 'pi pi-crown'
+						}
+					},
+					{
+						path: 'countries',
+						component: CountriesComponent,
+						data: {
+							title: 'Countries',
 							icon: 'pi pi-crown'
 						}
 					}

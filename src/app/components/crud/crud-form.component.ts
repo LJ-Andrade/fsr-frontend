@@ -10,8 +10,8 @@ import { SelectModule } from 'primeng/select';
 
 @Component({
     selector: 'app-crud-form',
-    imports: [ CommonModule, ButtonModule, SelectModule, 
-        FormsModule, ReactiveFormsModule, IftaLabelModule, FieldErrorComponent, InputTextModule, ],
+    imports: [ CommonModule, ButtonModule, SelectModule, FormsModule, ReactiveFormsModule, 
+        IftaLabelModule, FieldErrorComponent, InputTextModule, ],
     templateUrl: './crud-form.component.html',
 })
 

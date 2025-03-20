@@ -11,20 +11,20 @@ import { SectionConfig, ListData, ListConfig } from '@src/app/interfaces/crud.in
     selector: 'app-roles',
     standalone: true,
     imports: [ CommonModule, CrudManagerComponent, CrudFormComponent ],
-    templateUrl: './roles.component.html'
+    templateUrl: './countries.component.html'
 })
 
-export class RolesComponent extends CrudBase  {
+export class CountriesComponent extends CrudBase  {
     
     override ngOnInit() {
         super.ngOnInit()
     }
 
     override sectionConfig: SectionConfig = {
-        model: 'roles',
+        model: 'countries',
         icon: 'pi pi-crown',
-        nameSingular: 'role',
-        namePlural: 'roles',
+        nameSingular: 'country',
+        namePlural: 'countries',
         formSize: 'SMALL',
     }
 
@@ -35,7 +35,12 @@ export class RolesComponent extends CrudBase  {
             search: {
                 placeholder: 'By name...'
             }
-        }
+        },
+        { name: 'code', text: 'Code',
+            search: {
+                placeholder: 'By code...'
+            }
+        },
     ];
 
     override listConfig: ListConfig = {
@@ -46,10 +51,12 @@ export class RolesComponent extends CrudBase  {
     override formFields: any[] = [
 
         { name: 'id', label: 'Id', value: '', placeholder: 'Enter the role id', type: 'text', class: 'col-span-12',
-            hidden: true,
-            validators: [ Validators.required, Validators.minLength(1), Validators.maxLength(11)] },
+            hidden: true }, 
 
-        { name: 'name', label: 'Name', value: '', placeholder: 'Enter the role name', type: 'text', class: 'col-span-12',
+        { name: 'name', label: 'Name', value: '', placeholder: 'Enter the country name', type: 'text', class: 'col-span-12',
+            validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
+
+        { name: 'code', label: 'Codeame', value: '', placeholder: 'Enter the country code', type: 'text', class: 'col-span-12',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
     ]
 }

@@ -1,7 +1,7 @@
 import { Component, computed, EventEmitter, inject, Input, Output, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -16,14 +16,15 @@ import { SectionConfig } from '@src/app/interfaces/crud.interface';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroup } from 'primeng/inputgroup';
+import { SelectModule } from 'primeng/select';
 
 @Component({
 	selector: 'app-crud-manager',
 	templateUrl: './crud-manager.component.html',
 	standalone: true,
-	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule,
-		 InputGroupAddonModule, InputTextModule, InputGroup,
-		FormsModule, PaginatorModule, ButtonModule, DialogModule, PanelModule, Badge 
+	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule, FormsModule, ReactiveFormsModule,
+		 InputGroupAddonModule, InputTextModule, InputGroup, PaginatorModule, ButtonModule, 
+		 DialogModule, PanelModule, Badge, SelectModule
 	]
 })
 
@@ -38,28 +39,35 @@ export class CrudManagerComponent {
 	@Input() apiDataResponse!: Signal<Results<any>>
 	@Input() listVisibility: boolean = true;
 	@Input() creationFormVisibility: boolean = true;
-
+	@Input() searchForm: FormGroup = new FormGroup({});
+	
 	@Output() rowsSelected = new EventEmitter<any[]>();
+	@Output() requestRead = new EventEmitter<{[key: string]: any}>();
 	@Output() requestCreationForm = new EventEmitter<void>();
 	@Output() requestList = new EventEmitter<void>();
-	@Output() requestRead = new EventEmitter<number>();
 	@Output() requestEdit = new EventEmitter<any>();
-	
 	
 	selectedRows = signal<any[]>([]);
 	selectedRowsCount = computed(() => this.selectedRows().length);
 	activeData: any = {}
-	currentData: any[] = [];
+	currentData: any[] = []; // CHeck why I made this for,
 	displayDeleteConfirmation: boolean = false;
 	recordsToDelete: any[] = [];
 	creationFormTitle: string = 'Creating ' + this.sectionConfig.nameSingular;
 	currentPage: number = 1;
-
+	
+	
 	searchOptionsVisibility: boolean = false;
 	advancedSearchOptionsVisibility: boolean = false;
-	
+	advancedSearchAvailable: boolean = true;
+
+
+	// ngOnInit() {
+	// 	this.buildSearchForm()
+	// }
+
 	emitRequestRead() {
-		this.requestRead.emit(this.currentPage)
+		this.requestRead.emit({ page: this.currentPage })
 	}
 
 	emitRequestList() {
@@ -80,6 +88,36 @@ export class CrudManagerComponent {
 
 //#region Search
 
+// buildSearchForm() {
+
+// 	this.listData.forEach((field: any) => {
+		
+// 		if (field.search) {
+// 			this.searchForm.addControl(
+// 				field.name,
+// 				new FormControl(null))
+
+// 			// If at least 1 field has a search property, then show the advanced search options
+// 			this.advancedSearchAvailable = true;
+// 		}
+// 	});
+
+// }
+
+
+
+
+submitSearch() {
+	console.log(this.searchForm.value)
+	let searchParams: any = {};
+	for (const key in this.searchForm.value) {
+		if (this.searchForm.value[key] !== null) {
+			searchParams[key] = this.searchForm.value[key];
+		}
+	}
+	this.requestRead.emit(searchParams)
+}
+
 toggleSearchOptions(show: boolean = true) {
 	if (show) {
 		this.searchOptionsVisibility = true;
@@ -96,7 +134,8 @@ toggleAdvancedSearchOptions() {
 
 
 resetAdvancedSearchOptions() {
-	console.error("Not implemented")
+	this.requestRead.emit()
+	this.searchForm.reset()
 }
 //#endregion Search
 
@@ -111,15 +150,19 @@ resetAdvancedSearchOptions() {
 
 	toggleAllRows(event: any): void {
 		if (event.target.checked) {
+			
 		  this.currentData = this.apiDataResponse().results.filter(row => {
 			row.selected = true;
 			return true;
 		  });
 		} else {
 		  this.deselectAllRows();
+		  this.currentData = [];
 		}
 		this.updateSelected();
 		this.rowsSelected.emit(this.selectedRows());
+
+		console.log(this.currentData)
 	}
 
 	updateSelected(): void {
@@ -135,17 +178,6 @@ resetAdvancedSearchOptions() {
 //#endregion
 
 
-//#region Edit
-
-
-// editRecord(record: any) {
-// 	console.log(record)
-// 	this.activeData = record;
-// 	this.requestEdit.emit(this.activeData);
-// 	// this.displayEdit = true;
-// }
-
-//#endregion Edit
 
 
 //#region Delete
@@ -221,10 +253,10 @@ resetAdvancedSearchOptions() {
 		if (page !== undefined && rows !== undefined) {
 			const currentPage = page + 1;
 			const perPage = rows;
-			const url = `${this.sectionConfig.model}?page=${currentPage}&list_regs_per_page=${perPage}`;
+			// const url = `${this.sectionConfig.model}?page=${currentPage}&list_regs_per_page=${perPage}`;
 			localStorage.setItem('perPage', perPage.toString());
+			this.requestRead.emit({ page: currentPage })
 			this.currentPage = currentPage;
-			this.requestRead.emit(currentPage)
 		}
 	}
 
