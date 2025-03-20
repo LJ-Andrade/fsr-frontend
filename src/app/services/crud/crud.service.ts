@@ -53,7 +53,9 @@ export class CrudService extends DataService  {
 	}
 
 	save(data: any, model: string): Observable<any>  {
-		console.log(data)
+		
+		this.#state.update(state => ({ ...state, loading: true }))
+		
 		if (data.id == null) {
 			return this.create(data, model);
 		} else {
@@ -63,7 +65,8 @@ export class CrudService extends DataService  {
 	}
 
 	create(data: any, model: string): Observable<any>  {
-		console.log("Create ", data)
+		
+
 		return new Observable(observer => {
 			this.httpPost(model, data).subscribe({
 				next: (res: any) => {
@@ -72,10 +75,13 @@ export class CrudService extends DataService  {
 				},
 				error: (error: any) => {
 					console.log("Error on crudService ", error);
+					this.#state.update(state => ({ ...state, loading: false }))
 					observer.error(error);
 				},
 				complete: () => {
+					this.#state.update(state => ({ ...state, loading: false }))
 					observer.complete();
+
 				}
 			});
 		});

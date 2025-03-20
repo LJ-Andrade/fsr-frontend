@@ -1,13 +1,13 @@
 <h1><i [class]="sectionConfig.icon" style="color: slateblue"></i> {{ sectionConfig.namePlural | titlecase }}</h1>
 
-<p-toolbar styleClass="mb-6">
+<p-toolbar styleClass="mb-1" >
 	<div class="p-toolbar-group-start">
 		@if(listVisibility) {
 			<p-button [label]="'New ' + sectionConfig.nameSingular" icon="pi pi-plus" class="mr-2"
 				(onClick)="emitRequestCreationForm()" />
 		} @else {
-			<p-button label="List" icon="pi pi-list" class="mr-2" 
-				(onClick)="emitRequestList()" 
+			<p-button label="List" icon="pi pi-list" class="mr-2"
+				(onClick)="emitRequestList()"
 			/>
 		}
 		@if(selectedRows().length > 0) {
@@ -16,15 +16,47 @@
 			/>
 		}
 		<ng-content select="[slot=actions]"></ng-content>
+		
 	</div>
+	<ng-template #end>
+		@if(searchOptionsVisibility) {
+			<p-inputgroup>
+				<p-button label="Search" />
+				<input pInputText placeholder="Keyword" />
+			</p-inputgroup>
+			<p-button label="Advanced search" class="ml-2"  [styleClass]="'text-nowrap'"
+				(onClick)="toggleAdvancedSearchOptions()" />
+			<p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" class="ml-2"
+				(onClick)="toggleSearchOptions(false)" />
+		} @else {
+			@if(listVisibility)  {
+				<p-button icon="pi pi-search" [rounded]="true" [text]="true" [raised]="true"
+					(onClick)="toggleSearchOptions()" />
+			}
+		}
+
+	</ng-template>
+
+	
+</p-toolbar>
+
+<p-toolbar styleClass="mb-2" *ngIf="advancedSearchOptionsVisibility">
+	<ng-template #start>
+		Advanced search
+	</ng-template>
 
 	<ng-template #end>
-		<!--  Right actions -->
+
+		<p-button label="Reset" class="ml-2" [styleClass]="'text-nowrap'"
+			(onClick)="resetAdvancedSearchOptions()" />
+		<p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" class="ml-2"
+			(onClick)="toggleAdvancedSearchOptions()" />
+
 	</ng-template>
 </p-toolbar>
 
 <div *ngIf="listVisibility">
-	<div class="table-responsive">
+	<div class="table-responsive mt-3">
 		@if(!apiDataResponse().loading){
 			<table class="table">
 				<thead>
@@ -120,7 +152,7 @@
 
 <!-- CREATION FORM  -->
 <div class="flex justify-center" *ngIf="creationFormVisibility">
-	<div class="w-full"
+	<div class="w-full mt-3"
 		[ngClass]="{
 			'sm:max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl': sectionConfig.formSize == 'SMALL',
 			'sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl': sectionConfig.formSize == 'MEDIUM'
@@ -132,6 +164,12 @@
 			</ng-template>
 			<ng-template pTemplate="body">
 				<ng-content select="[mainForm]"></ng-content>
+			</ng-template>
+
+			<ng-template #icons>
+				<p-button icon="pi pi-times" [rounded]="true" [text]="true" [raised]="true" severity="danger"
+					(onClick)="emitRequestList()"
+				/>
 			</ng-template>
 		</p-panel>
 	</div>

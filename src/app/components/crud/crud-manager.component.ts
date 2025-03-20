@@ -13,12 +13,16 @@ import { Badge } from 'primeng/badge';
 import { NotificationService } from '@src/app/services/notification.service';
 import { CrudService } from '@src/app/services/crud/crud.service';
 import { SectionConfig } from '@src/app/interfaces/crud.interface';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputGroup } from 'primeng/inputgroup';
 
 @Component({
 	selector: 'app-crud-manager',
 	templateUrl: './crud-manager.component.html',
 	standalone: true,
-	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule, 
+	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule,
+		 InputGroupAddonModule, InputTextModule, InputGroup,
 		FormsModule, PaginatorModule, ButtonModule, DialogModule, PanelModule, Badge 
 	]
 })
@@ -50,9 +54,9 @@ export class CrudManagerComponent {
 	recordsToDelete: any[] = [];
 	creationFormTitle: string = 'Creating ' + this.sectionConfig.nameSingular;
 	currentPage: number = 1;
-	// ngOnInit() {
-	// 	this.
-	// }
+
+	searchOptionsVisibility: boolean = false;
+	advancedSearchOptionsVisibility: boolean = false;
 	
 	emitRequestRead() {
 		this.requestRead.emit(this.currentPage)
@@ -64,13 +68,39 @@ export class CrudManagerComponent {
 
 	emitRequestCreationForm() {
 		this.requestCreationForm.emit()
-		this.creationFormTitle = 'Creating ' + this.sectionConfig.nameSingular;	
+		this.creationFormTitle = 'Creating ' + this.sectionConfig.nameSingular;
+		this.toggleSearchOptions(false);
 	}
 	
 	emitRequestEdit(record: any) {
 		this.requestEdit.emit(record);
-		this.creationFormTitle = 'Editing ' + this.sectionConfig.nameSingular;	
+		this.creationFormTitle = 'Editing ' + this.sectionConfig.nameSingular;
+		this.toggleSearchOptions(false);
 	}
+
+//#region Search
+
+toggleSearchOptions(show: boolean = true) {
+	if (show) {
+		this.searchOptionsVisibility = true;
+		this.advancedSearchOptionsVisibility = false;
+	} else {
+		this.searchOptionsVisibility = false;
+		this.advancedSearchOptionsVisibility = false;
+	}
+}
+
+toggleAdvancedSearchOptions() {
+	this.advancedSearchOptionsVisibility = !this.advancedSearchOptionsVisibility;
+}
+
+
+resetAdvancedSearchOptions() {
+	console.error("Not implemented")
+}
+//#endregion Search
+
+
 //#region Row Selection
 	
 	toggleRowSelection(row: any): void {

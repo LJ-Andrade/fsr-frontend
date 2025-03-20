@@ -12,9 +12,6 @@
     (requestEdit)="editRecord($event)">
     
 	<div mainForm>
-        <div>
-            {{ sectionForm.value | json }}
-        </div>
 		<app-crud-form
 			[sectionForm]="sectionForm"
 			[formFields]="formFields"

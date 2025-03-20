@@ -22,6 +22,10 @@ export class CrudFormComponent {
     @Input() loading: boolean = false
     @Output() submitFormEvent = new EventEmitter<any>();
 
+    get saveBtnLabel(): string {
+        return this.loading ? 'Saving...' : 'Save';
+    }
+
     submitForm() {
         this.submitFormEvent.emit(this.sectionForm.value)
     }

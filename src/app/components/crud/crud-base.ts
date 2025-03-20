@@ -181,9 +181,9 @@ export class CrudBase implements OnInit {
 	
 	fillFormWithRecordData(record: any) {
 		// console.log('Record ', record)
-		console.log('Form ', this.sectionForm)
+		// console.log('Form ', this.sectionForm)
 		// this.sectionForm.patchValue(record);
-		console.log("form fields ", this.formFields)
+		// console.log("form fields ", this.formFields)
 		this.formFields.forEach(field => {
 			
 			if(field.isRelation) {

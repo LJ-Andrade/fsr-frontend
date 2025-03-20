@@ -44,7 +44,9 @@
                 }   
 
                 <div class="col-span-12 mt-3">
-                    <p-button label="Save" icon="pi pi-check" severity="success"
+                    <p-button 
+                        [label]="saveBtnLabel"
+                        icon="pi pi-check" severity="success"
                         (onClick)="submitForm()"
                         [loading]="loading"
                     />
