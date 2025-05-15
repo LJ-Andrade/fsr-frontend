@@ -1,57 +1,54 @@
 
 <div class="flex justify-center">
-    <div class="w-full" 
-        [ngClass]="{
-            'sm:max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl': formSize == 'SMALL',
-            'sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl': formSize == 'MEDIUM'
-        }">
+	<div class="w-full" 
+		[ngClass]="{
+			'sm:max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl': formSize == 'SMALL',
+			'sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl': formSize == 'MEDIUM'
+		}">
 
-        <form class="main-form" [formGroup]="sectionForm">
-            <div class="grid grid-cols-12 gap-4">
-                @for(field of formFields; track $index) {
-                    @if(!field.hidden) {
-                    
-                        @switch (field.type) {
+		<form class="main-form" [formGroup]="sectionForm">
+			<div class="grid grid-cols-12 gap-4">
+				@for(field of formFields; track $index) {
+					@if(!field.hidden) {
+						@switch (field.type) {
+							@case('text') {
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+									<p-iftalabel>
+										<input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
+										<label for="username">{{ field.label }}</label>
+									</p-iftalabel>
+									<app-field-error [field]="sectionForm.get(field.name)"/>
+								</div>
+							}
 
-                            @case('text') {
-                                <div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
-                                    <p-iftalabel>
-                                        <input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
-                                        <label for="username">{{ field.label }}</label>
-                                    </p-iftalabel>
-                                    <app-field-error [field]="sectionForm.get(field.name)"/>
-                                </div>
-                            }
+							@case('select') {
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+									<p-iftalabel class="w-full">
+										<p-select class="w-full"
+											[formControlName]="field.name"
+											[options]="field.options.data"
+											[optionLabel]="field.options.valueName"
+											[placeholder]="field.placeholder"
+											[optionValue]="field.options.valueName"
+										/>
+										<label>{{ field.label }}</label>
+									</p-iftalabel>
+									<app-field-error [field]="sectionForm.get(field.name)" />
+								</div>
+							}
+						}
+					}
+				}   
 
-                            @case('select') {
-                                <div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
-                                    <p-iftalabel class="w-full">
-                                        <p-select class="w-full"
-                                            [formControlName]="field.name"
-                                            [options]="field.options.data"
-                                            [optionLabel]="field.options.valueName"
-                                            [placeholder]="field.placeholder"
-                                            [optionValue]="field.options.valueName"
-                                        />
-                                        <label>{{ field.label }}</label>
-                                    </p-iftalabel>
-                                    <app-field-error [field]="sectionForm.get(field.name)" />
-                                </div>
-                            }
-                        }
-                    }
-                }   
-
-                <div class="col-span-12 mt-3">
-                    <p-button 
-                        [label]="saveBtnLabel"
-                        icon="pi pi-check" severity="success"
-                        (onClick)="submitForm()"
-                        [loading]="loading"
-                    />
-                </div>
-            </div>
-        </form>
-
-    </div>
+				<div class="col-span-12 mt-3">
+					<p-button 
+						[label]="saveBtnLabel"
+						icon="pi pi-check" severity="success"
+						(onClick)="submitForm()"
+						[loading]="loading"
+					/>
+				</div>
+			</div>
+		</form>
+	</div>
 </div>

@@ -9,7 +9,7 @@ import { MessageService } from 'primeng/api';
 export class NotificationService {
     constructor(private messageService: MessageService) {}
 
-    success(summary: string, detail: string) {
+    success(summary: string, detail: string = '') {
         this.messageService.add({
             severity: 'success',
             summary,
@@ -17,7 +17,7 @@ export class NotificationService {
         });
     }
 
-    error(summary: string, detail: string) {
+    error(summary: string, detail: string = '') {
         this.messageService.add({
             severity: 'error',
             summary,
@@ -25,7 +25,7 @@ export class NotificationService {
         });
     }
 
-    info(summary: string, detail: string) {
+    info(summary: string, detail: string = '') {
         this.messageService.add({
             severity: 'info',
             summary,

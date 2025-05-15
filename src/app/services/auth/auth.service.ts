@@ -31,24 +31,45 @@ interface User {
 })
 
 export class AuthService {
-	notificationService = inject(NotificationService);
-	http = inject(HttpClient);
-	dataService = inject(DataService);
-	router = inject(Router);
+    notificationService = inject(NotificationService);
+    http = inject(HttpClient);
+    dataService = inject(DataService);
+    router = inject(Router);
 
-	// Use this on the components to check if the user is logged in
-	// isLoggedIn = computed(() => this.authService.isAuthenticated());
-    
+    private loginStatus = signal<LoginState>({ status: 'pending' });
+    private user = signal<AuthState>({ user: null });
+    loginState = computed(() => this.loginStatus().status);
 
-	private loginStatus = signal<LoginState>({
-		status: 'pending',
-	});
+    authenticate(data: any, redirectTo: string = '/dashboard') {
+        this.loginStatus.set({ status: 'authenticating' });
 
-	private user = signal<AuthState>({
-		user: null,
-	});
+        return this.dataService.httpPost('auth/login', data).subscribe({
+            next: (response: any) => {
+                localStorage.setItem(environment.tokenKeyName, response.token.access_token);
+                this.user.set({ user: response.data });
+                this.loginStatus.set({ status: 'success' });
+                this.notificationService.success('Welcome', 'Login successful');
+                this.router.navigateByUrl(redirectTo);
+            },
+            error: (error: any) => {
+                this.handleError(error);
+                this.loginStatus.set({ status: 'error' });
+            },
+            complete: () => {
+                setTimeout(() => {
+                    this.loginStatus.set({ status: 'pending' });
+                }, 1000);
+            }
+        });
+    }
 
-	loginState = computed(() => this.loginStatus().status);
+    private handleError(error: any) {
+        if (error.status === 0) {
+            this.notificationService.error('Error', 'No server connection. Try again later.');
+        } else {
+            this.notifyErrors(error.error.errors);
+        }
+    }
 
 	isAuthenticated() {
 		const authToken = localStorage.getItem(environment.tokenKeyName);
@@ -150,7 +171,7 @@ export class AuthService {
 
 	logout() {
 
-		this.notificationService.info('Cerrando sesión...', '');
+		this.notificationService.info('Login out...', '');
 		this.dataService.httpPost(environment.apiUrl + 'auth/logout', {}).subscribe({
 			next: (res: any) => {
 				if (res.status || res.message == 'Success') {

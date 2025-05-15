@@ -6,17 +6,18 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Results } from '@src/app/interfaces/results.interface';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { PaginatorModule } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { PanelModule } from 'primeng/panel';
 import { Badge } from 'primeng/badge';
 import { NotificationService } from '@src/app/services/notification.service';
-import { CrudService } from '@src/app/services/crud/crud.service';
+import { CrudService } from '@src/app/services/crud.service';
 import { SectionConfig } from '@src/app/interfaces/crud.interface';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroup } from 'primeng/inputgroup';
 import { SelectModule } from 'primeng/select';
+import { UtilsService } from '@src/app/services/utils.service';
 
 @Component({
 	selector: 'app-crud-manager',
@@ -32,6 +33,7 @@ export class CrudManagerComponent {
 
 	notificationService: NotificationService = inject(NotificationService);
 	crudService: CrudService = inject(CrudService);
+	utilsService: UtilsService = inject(UtilsService);
 
 	@Input() sectionConfig: SectionConfig = { model: '', icon: '', nameSingular: '', namePlural: '', formSize: 'LARGE' };
 	@Input() listData: any[] = [];
@@ -40,13 +42,13 @@ export class CrudManagerComponent {
 	@Input() listVisibility: boolean = true;
 	@Input() creationFormVisibility: boolean = true;
 	@Input() searchForm: FormGroup = new FormGroup({});
-	
+
 	@Output() rowsSelected = new EventEmitter<any[]>();
 	@Output() requestRead = new EventEmitter<{[key: string]: any}>();
-	@Output() requestCreationForm = new EventEmitter<void>();
+	@Output() requestCreation = new EventEmitter<void>();
 	@Output() requestList = new EventEmitter<void>();
 	@Output() requestEdit = new EventEmitter<any>();
-	
+
 	selectedRows = signal<any[]>([]);
 	selectedRowsCount = computed(() => this.selectedRows().length);
 	activeData: any = {}
@@ -55,17 +57,25 @@ export class CrudManagerComponent {
 	recordsToDelete: any[] = [];
 	creationFormTitle: string = 'Creating ' + this.sectionConfig.nameSingular;
 	currentPage: number = 1;
-	
-	
+
 	searchOptionsVisibility: boolean = false;
 	advancedSearchOptionsVisibility: boolean = false;
 	advancedSearchAvailable: boolean = true;
 
+	ngOnInit() {
+		this.searchOptionsVisibility = this.utilsService.loadSetting('searchVisibility', false);
+		this.ensureSearchFormControls();
+	}
 
-	// ngOnInit() {
-	// 	this.buildSearchForm()
-	// }
-
+	ensureSearchFormControls() {
+		if (!this.searchForm || !this.listData) return;
+		this.listData.forEach(column => {
+			if (column.search && !this.searchForm.contains(column.name)) {
+				this.searchForm.addControl(column.name, new FormControl(''));
+			}
+		});
+	}
+	
 	emitRequestRead() {
 		this.requestRead.emit({ page: this.currentPage })
 	}
@@ -74,90 +84,73 @@ export class CrudManagerComponent {
 		this.requestList.emit()
 	}
 
-	emitRequestCreationForm() {
-		this.requestCreationForm.emit()
-		this.creationFormTitle = 'Creating ' + this.sectionConfig.nameSingular;
-		this.toggleSearchOptions(false);
+	emitRequestCreation() {
+		this.requestCreation.emit()
+		this.creationFormTitle = 'Creating ' + this.sectionConfig.nameSingular
+		this.toggleSearchOptions(false)
 	}
-	
+
 	emitRequestEdit(record: any) {
 		this.requestEdit.emit(record);
-		this.creationFormTitle = 'Editing ' + this.sectionConfig.nameSingular;
-		this.toggleSearchOptions(false);
+		this.creationFormTitle = 'Editing ' + this.sectionConfig.nameSingular
+		this.toggleSearchOptions(false)
 	}
 
 //#region Search
 
-// buildSearchForm() {
 
-// 	this.listData.forEach((field: any) => {
-		
-// 		if (field.search) {
-// 			this.searchForm.addControl(
-// 				field.name,
-// 				new FormControl(null))
-
-// 			// If at least 1 field has a search property, then show the advanced search options
-// 			this.advancedSearchAvailable = true;
-// 		}
-// 	});
-
-// }
-
-
-
-
-submitSearch() {
-	console.log(this.searchForm.value)
-	let searchParams: any = {};
-	for (const key in this.searchForm.value) {
-		if (this.searchForm.value[key] !== null) {
-			searchParams[key] = this.searchForm.value[key];
+	submitSearch() {
+		let searchParams: any = {};
+		for (const key in this.searchForm.value) {
+			if (this.searchForm.value[key] !== null) {
+				searchParams[key] = this.searchForm.value[key]
+			}
 		}
+		this.requestRead.emit(searchParams)
 	}
-	this.requestRead.emit(searchParams)
-}
 
-toggleSearchOptions(show: boolean = true) {
-	if (show) {
-		this.searchOptionsVisibility = true;
-		this.advancedSearchOptionsVisibility = false;
-	} else {
-		this.searchOptionsVisibility = false;
-		this.advancedSearchOptionsVisibility = false;
+	toggleSearchOptions(show: boolean = true) {
+		if (show) {
+			this.searchOptionsVisibility = true;
+			this.advancedSearchOptionsVisibility = false;
+		} else {
+			this.searchOptionsVisibility = false;
+			this.advancedSearchOptionsVisibility = false;
+		}
+		this.utilsService.saveSetting('searchVisibility', this.searchOptionsVisibility);
 	}
-}
-
-toggleAdvancedSearchOptions() {
-	this.advancedSearchOptionsVisibility = !this.advancedSearchOptionsVisibility;
-}
 
 
-resetAdvancedSearchOptions() {
-	this.requestRead.emit()
-	this.searchForm.reset()
-}
+	toggleAdvancedSearchOptions() {
+		this.advancedSearchOptionsVisibility = !this.advancedSearchOptionsVisibility;
+	}
+
+
+	resetAdvancedSearchOptions() {
+		this.requestRead.emit()
+		this.searchForm.reset()
+	}
 //#endregion Search
 
 
 //#region Row Selection
-	
+
 	toggleRowSelection(row: any): void {
 		this.updateSelected();
 		this.rowsSelected.emit(this.selectedRows());
 	}
-	
+
 
 	toggleAllRows(event: any): void {
 		if (event.target.checked) {
-			
-		  this.currentData = this.apiDataResponse().results.filter(row => {
+
+			this.currentData = this.apiDataResponse().results.filter(row => {
 			row.selected = true;
 			return true;
-		  });
+			});
 		} else {
-		  this.deselectAllRows();
-		  this.currentData = [];
+			this.deselectAllRows();
+			this.currentData = [];
 		}
 		this.updateSelected();
 		this.rowsSelected.emit(this.selectedRows());
@@ -176,8 +169,6 @@ resetAdvancedSearchOptions() {
 	}
 
 //#endregion
-
-
 
 
 //#region Delete
@@ -263,6 +254,3 @@ resetAdvancedSearchOptions() {
 //#endregion Pagination
 
 }
-
-
-

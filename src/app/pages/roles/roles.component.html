@@ -7,11 +7,12 @@
     [creationFormVisibility]="creationFormVisibility"
     (rowsSelected)="onRowsSelected($event)"
     (requestRead)="fetchData($event)"
-    (requestCreationForm)="toggleCreationForm()"
+    (requestCreation)="toggleCreationForm()"
     (requestList)="toggleList()"
     (requestEdit)="editRecord($event)">
     
 	<div mainForm>
+        <!-- {{ sectionForm.value | json }} -->
 		<app-crud-form
 			[sectionForm]="sectionForm"
 			[formFields]="formFields"

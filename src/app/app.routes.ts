@@ -10,6 +10,7 @@ import { ExamplesComponent } from './pages/examples/examples.component';
 import { UsersComponent } from './pages/users/users.component';
 import { RolesComponent } from './pages/roles/roles.component';
 import { CountriesComponent } from './pages/countries/countries.component';
+import { StatesComponent } from './pages/states/states.component';
 
 /**
  * App routes
@@ -18,8 +19,10 @@ import { CountriesComponent } from './pages/countries/countries.component';
 // If you want to specify a route but don't want it to appear in the main menu
 // add "skipFromMenu: true" to the route's data
 
+
 export const routes: Routes = [
-	{ path: 'login', component: LoginComponent, pathMatch: 'full' },
+	
+	{ path: 'login', component: LoginComponent, pathMatch: 'full', },
 	{ path: 'request-password-reset', component: RequestResetPasswordComponent, pathMatch: 'full' },
 	{ path: 'reset-password', component: ResetPasswordComponent, pathMatch: 'full' },
 	{
@@ -83,7 +86,15 @@ export const routes: Routes = [
 						component: CountriesComponent,
 						data: {
 							title: 'Countries',
-							icon: 'pi pi-crown'
+							icon: 'pi pi-globe'
+						}
+					},
+					{
+						path: 'states',
+						component: StatesComponent,
+						data: {
+							title: 'States',
+							icon: 'pi pi-map'
 						}
 					}
 				]

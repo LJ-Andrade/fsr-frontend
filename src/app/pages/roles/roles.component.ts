@@ -25,13 +25,14 @@ export class RolesComponent extends CrudBase  {
         icon: 'pi pi-crown',
         nameSingular: 'role',
         namePlural: 'roles',
-        formSize: 'SMALL',
+        formSize: 'SMALL'
     }
 
     override listData: ListData[] = [
         { name: 'id', text: 'Id', columnClass: 'w-3', hideOnCreation: false, hideOnEdition: false,
             unDeleteableIds: [ 1, 2 ], unEditableIds: [ 1, 2 ] },
-        { name: 'name', text: 'Name', 
+            
+        { name: 'name', text: 'Name',
             search: {
                 placeholder: 'By name...'
             }
@@ -46,8 +47,7 @@ export class RolesComponent extends CrudBase  {
     override formFields: any[] = [
 
         { name: 'id', label: 'Id', value: '', placeholder: 'Enter the role id', type: 'text', class: 'col-span-12',
-            hidden: true,
-            validators: [ Validators.required, Validators.minLength(1), Validators.maxLength(11)] },
+        hidden: true },
 
         { name: 'name', label: 'Name', value: '', placeholder: 'Enter the role name', type: 'text', class: 'col-span-12',
             validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },

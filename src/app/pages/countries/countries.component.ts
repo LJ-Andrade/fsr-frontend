@@ -38,7 +38,7 @@ export class CountriesComponent extends CrudBase  {
         },
         { name: 'code', text: 'Code',
             search: {
-                placeholder: 'By code...'
+                placeholder: 'By code...',
             }
         },
     ];

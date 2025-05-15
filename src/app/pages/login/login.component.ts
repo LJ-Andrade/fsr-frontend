@@ -1,4 +1,4 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnInit, effect, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -7,92 +7,115 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
-import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@src/app/services/auth/auth.service';
+import { FieldErrorComponent } from '@src/app/components/field-error/field-error.component';
+import { SkinService } from '@src/app/services/skin.service';
 
 @Component({
 	selector: 'app-login',
 	standalone: true,
 	imports: [
-		CommonModule,
-		ReactiveFormsModule,
-		RouterModule,
-		ButtonModule,
-		InputTextModule,
-		PasswordModule,
-		CardModule,
-		DividerModule,
-		ToastModule
+		CommonModule, ReactiveFormsModule, RouterModule, FieldErrorComponent,
+		ButtonModule, InputTextModule, PasswordModule, CardModule, DividerModule,
+
 	],
 	providers: [MessageService],
 	templateUrl: './login.component.html',
 	styleUrl: './login.component.sass'
 })
-export class LoginComponent implements OnInit {
-	
-	loginForm: FormGroup;
+
+export class LoginComponent {
+	authService: AuthService = inject(AuthService);
+	messageService: MessageService = inject(MessageService);
+	skinService: SkinService = inject(SkinService);
+
+	formFields = [
+		{
+			name: 'user',
+			label: 'Username',
+			type: 'text',
+			validators: [Validators.required],
+			placeholder: 'Enter username'
+		},
+		{
+			name: 'password',
+			label: 'Password',
+			type: 'password',
+			validators: [Validators.required, Validators.minLength(8)],
+			placeholder: 'Enter password'
+		}
+	];
+
+	loginForm!: FormGroup;
 	loading: boolean = false;
 
-	constructor(
-		private messageService: MessageService,
-		private authService: AuthService
-	) {
-		this.loginForm = new FormGroup({
-			user: new FormControl('', [Validators.required]),
-			password: new FormControl('', [Validators.required, Validators.minLength(8)])
-		});
+	constructor() {
+		this.buildForm();
 
-		// Efecto para manejar los cambios en el estado del login
 		effect(() => {
-			const status = this.authService.loginState();
-			
-			switch (status) {
-				case 'success':
-					this.loading = false;
-					this.messageService.add({
-						severity: 'success',
-						summary: 'Éxito',
-						detail: 'Inicio de sesión exitoso'
-					});
-					break;
-				case 'error':
-					this.loading = false;
-					break;
-				case 'authenticating':
-					this.loading = true;
-					break;
-				case 'pending':
-					this.loading = false;
-					break;
-			}
+			this.handleLoginState(this.authService.loginState() as 'authenticating' | 'success' | 'error' | 'idle');
 		});
 	}
 
 	ngOnInit(): void {
-		// Si ya está autenticado, redirigir al dashboard
+		const urlParams = new URLSearchParams(window.location.search);
+		const domain = urlParams.get('domain');
+
+		if (domain) {
+			this.skinService.loadSkin(domain).subscribe({
+				next: (res) => console.log('Skin loaded:', res),
+				error: (err) => console.error('Skin error:', err)
+			});
+			console.log('Domain:', domain);
+		} else {
+			console.warn('No domain provided in URL');
+		}
+
 		if (this.authService.isAuthenticated()) {
 			this.authService.router.navigate(['/dashboard']);
 		}
 	}
 
-	onSubmit() {
-		if (this.loginForm.valid) {
-			this.loading = true;
-			// Llamar al servicio de autenticación
-			this.authService.login(this.loginForm.value, '/dashboard');
-		} else {
+
+	private buildForm() {
+		this.loginForm = new FormGroup({});
+		this.formFields.forEach(field => {
+			this.loginForm.addControl(
+				field.name,
+				new FormControl('', field.validators)
+			);
+		});
+	}
+
+	private handleLoginState(status: 'authenticating' | 'success' | 'error' | 'idle') {
+		this.loading = status === 'authenticating';
+
+		if (status === 'success') {
 			this.messageService.add({
-				severity: 'error',
-				summary: 'Error',
-				detail: 'Por favor, complete todos los campos correctamente'
-			});
-			
-			// Marcar todos los campos como tocados para mostrar los errores
-			Object.keys(this.loginForm.controls).forEach(key => {
-				const control = this.loginForm.get(key);
-				control?.markAsTouched();
+				severity: 'success',
+				summary: 'Success',
+				detail: 'Login successful'
 			});
 		}
+	}
+
+	onSubmit() {
+		if (this.loginForm.valid) {
+			this.authService.authenticate(this.loginForm.value, '/dashboard');
+		} else {
+			this.handleInvalidForm();
+		}
+	}
+
+	private handleInvalidForm() {
+		this.messageService.add({
+			severity: 'error',
+			summary: 'Error',
+			detail: 'Please fill all required fields correctly'
+		});
+		Object.keys(this.loginForm.controls).forEach(key => {
+			this.loginForm.get(key)?.markAsTouched();
+		});
 	}
 }

@@ -1,5 +1,5 @@
 import { Injectable, OnInit, inject } from '@angular/core';
-import { CrudService } from '@src/app/services/crud/crud.service';
+import { CrudService } from '@src/app/services/crud.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ListConfig, ListData, SectionConfig } from '@src/app/interfaces/crud.interface';
 
@@ -20,8 +20,6 @@ export class CrudBase implements OnInit {
 	relations: { [key: string]: any } = {};
 	
     ngOnInit(): void {
-		// this.toggleCreationForm(); // DEBUG
-    	// this.fetchData({'first_name': 'Example', 'user': 'admin'}); // DEBUG Search Example 
 	   	this.fetchData();
 	   	this.buildSectionForm();
 		this.buildSearchForm();
@@ -82,7 +80,6 @@ export class CrudBase implements OnInit {
 			}
 		});
 
-
 		this.sectionForm = new FormGroup({});
 
 		this.formFields.forEach(field => {
@@ -100,12 +97,9 @@ export class CrudBase implements OnInit {
 		this.listData.forEach((field: any) => {
 			if (field.search) {
 				this.searchForm.addControl(
-					field.name,
-					new FormControl(null))
+					field.name, new FormControl(null))
 			}
 		});
-
-		console.log(this.searchForm)
 	}
 
 
@@ -128,6 +122,7 @@ export class CrudBase implements OnInit {
 
 
 	submitForm() {
+		console.log(this.validateForm())
 		if(!this.validateForm()) {
 			return
 		}
@@ -148,12 +143,21 @@ export class CrudBase implements OnInit {
 				let errors = error.error;
 				if(errors) {
 					this.sectionForm.get('errors')?.setErrors({serverError: errors.errors})
-					let errors_test: string = '';
-					for (let key in errors.errors) {
-						errors_test += '- ' + errors.errors[key] + '\n';
+					console.log("Error on form ", errors)
+					
+					let error_message: string = '';
+					
+					if (errors.errors) {
+						for (let key in errors.errors) {
+							error_message += '- ' + errors.errors[key] + '\n';
+						}
 					}
 
-					this.crudService.notificationService.error("There are errors on the form ", errors_test);
+					if (errors.error) {
+						error_message += '- '+ errors.error + '\n';
+					}
+
+					this.crudService.notificationService.error("There are errors on the form ", error_message);
 				}
 			},
 			complete: () => {
@@ -174,6 +178,8 @@ export class CrudBase implements OnInit {
 
 	toggleCreationForm(visibility: boolean = true, clearForm: boolean = false): void {
 		this.hideOtherComponents()
+		this.clearCreationForm();
+
 		if(visibility) {
 			this.creationFormVisibility = true;
 		} else {
@@ -184,10 +190,8 @@ export class CrudBase implements OnInit {
 		}
 	}
 
-
 	editRecord(record: any) {
 		this.toggleEditForm(true, record);
-
 	}
 
 	toggleEditForm(visibility: boolean = true, record: any = null): void {
@@ -226,7 +230,7 @@ export class CrudBase implements OnInit {
 			}
 		});
 	}
-	
+
 
 	toggleList(visibility: boolean = true): void {
 		this.hideOtherComponents()
