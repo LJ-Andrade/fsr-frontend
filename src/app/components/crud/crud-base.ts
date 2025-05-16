@@ -18,11 +18,23 @@ export class CrudBase implements OnInit {
 	currentPage: number = 1;
 
 	relations: { [key: string]: any } = {};
-	
+	debug: boolean = false;
+
     ngOnInit(): void {
 	   	this.fetchData();
 	   	this.buildSectionForm();
 		this.buildSearchForm();
+
+		if (this.debug) {
+			console.info("Debug mode is activated on the current view file")
+			console.log('Section config ', this.sectionConfig)
+			console.log('List data ', this.listData)
+			console.log('List config ', this.listConfig)
+			console.log('Form fields ', this.formFields)
+			
+			console.log('Relations ', this.relations)
+		}
+
     }
 
 	ngOnDestroy(): void {
@@ -61,6 +73,7 @@ export class CrudBase implements OnInit {
 		this.currentPage = params['page']
 		
 		this.crudService.read(this.sectionConfig.model, params)
+
 	}
 
     fetchRelation(model: string, field: string) {

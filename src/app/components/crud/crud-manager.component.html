@@ -24,12 +24,12 @@
 				<p-button label="Search" />
 				<input pInputText placeholder="Keyword" />
 			</p-inputgroup>
+			
 			@if(advancedSearchAvailable) {
 				<p-button label="Advanced search" 
 					class="ml-2" [styleClass]="'text-nowrap'"
 					(onClick)="toggleAdvancedSearchOptions()" />	
 			}
-
 
 			<p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" class="ml-2"
 				(onClick)="toggleSearchOptions(false)" />
@@ -90,10 +90,12 @@
 	</ng-template>
 </p-toolbar>
 
+<!-- LIST -->
 <div *ngIf="listVisibility">
 	<div class="table-responsive mt-3">
 		@if(!apiDataResponse().loading){
 			<table class="table">
+				<!-- List Titles -->
 				<thead>
 					<tr>
 						<th scope="col" class="checkbox-col">
@@ -109,6 +111,7 @@
 						<th scope="col"></th>
 					</tr>
 				</thead>
+				<!-- List Results -->
 				<tbody>
 					@for(record of apiDataResponse().results; track record.id; let odd = $odd) {
 						<tr class="table-row" [class.odd]="odd" [ngClass]="{ 'row-selected': record.selected } ">
@@ -117,31 +120,45 @@
 							</td>
 							@for(item of listData; track $index; let odd = $odd) {
 								@if(!item.hidden && !item.hideOnList) {
-									@if(item.relation) {
+									@if(item.isRelation) {
 										<!-- Relation Data -->
 										<td [ngClass]="item['columnClass']">
-											@if(item.showAsBadge) {
-												<p-badge *ngIf="record[item.relationName] != ''" 
-													[value]="record[item.relationName]" 
+											@if(item.isArray) {
+												@for(relation of record[item.relationName]; track $index) {
+													<span [ngClass]="{'inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset': item.showAsBadge }">
+														{{ relation }}
+													</span>	
+												}
+											} @else {
+												<span [ngClass]="{'inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset': item.showAsBadge }">
+													{{ record[item.relationFieldName] }}
+												</span>
+													
+											}
+											
+											<!-- @if(item.showAsBadge) {
+												<p-badge *ngIf="record[item.relationFieldName] != ''" 
+													[value]="record[item.relationFieldName]" 
 													badgeSize="small" severity="success" 
 												/>
 											} @else {
-												{{ record[item.relationName] }}
-											}
+												{{ record[item.relationFieldName] }}
+											} -->
 
 										</td>
 
 									} @else {
 										<!-- Main Data -->
 										<td [ngClass]="item['columnClass']">
-											@if(item.showAsBadge) {
-												<p-badge *ngIf="record[item.name] != ''" 
-													[value]="record[item.name]" 
-													badgeSize="small" severity="success" 
-												/>
-											} @else {
+											<span
+													[ngClass]="item.showAsBadge ? 
+													'inline-flex items-center rounded-md ' + 
+													(item.badgeBgClass || 'bg-blue-50') + 
+													' px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset' 
+													: ''"
+												>
 												{{ record[item.name] }}
-											}
+											</span>
 										</td>
 									} 
 								}

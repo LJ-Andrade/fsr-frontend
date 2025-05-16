@@ -42,7 +42,7 @@ export class CrudService extends DataService  {
 						pagination: this.dataService.makePagination(res.meta),
 						error: ''
 					})
-                    // console.log(this.#state())
+                    console.log(this.#state())
 				},
 				error: (error: any) => {
 					console.log("Error on users ", error)

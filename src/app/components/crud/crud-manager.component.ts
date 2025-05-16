@@ -1,23 +1,22 @@
-import { Component, computed, EventEmitter, inject, Input, Output, Signal, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CheckboxModule } from 'primeng/checkbox';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonComponent } from '../skeleton/skeleton.component';
-import { ToolbarModule } from 'primeng/toolbar';
-import { Results } from '@src/app/interfaces/results.interface';
-import { PaginatorModule } from 'primeng/paginator';
-import { DialogModule } from 'primeng/dialog';
-import { PanelModule } from 'primeng/panel';
-import { Badge } from 'primeng/badge';
-import { NotificationService } from '@src/app/services/notification.service';
-import { CrudService } from '@src/app/services/crud.service';
-import { SectionConfig } from '@src/app/interfaces/crud.interface';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputGroup } from 'primeng/inputgroup';
-import { SelectModule } from 'primeng/select';
-import { UtilsService } from '@src/app/services/utils.service';
+import { Component, computed, EventEmitter, inject, Input, Output, Signal, signal } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { CheckboxModule } from 'primeng/checkbox'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { ButtonModule } from 'primeng/button'
+import { SkeletonComponent } from '../skeleton/skeleton.component'
+import { ToolbarModule } from 'primeng/toolbar'
+import { Results } from '@src/app/interfaces/results.interface'
+import { PaginatorModule } from 'primeng/paginator'
+import { DialogModule } from 'primeng/dialog'
+import { PanelModule } from 'primeng/panel'
+import { NotificationService } from '@src/app/services/notification.service'
+import { CrudService } from '@src/app/services/crud.service'
+import { SectionConfig } from '@src/app/interfaces/crud.interface'
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon'
+import { InputTextModule } from 'primeng/inputtext'
+import { InputGroup } from 'primeng/inputgroup'
+import { SelectModule } from 'primeng/select'
+import { UtilsService } from '@src/app/services/utils.service'
 
 @Component({
 	selector: 'app-crud-manager',
@@ -25,7 +24,7 @@ import { UtilsService } from '@src/app/services/utils.service';
 	standalone: true,
 	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule, FormsModule, ReactiveFormsModule,
 		 InputGroupAddonModule, InputTextModule, InputGroup, PaginatorModule, ButtonModule, 
-		 DialogModule, PanelModule, Badge, SelectModule
+		 DialogModule, PanelModule, SelectModule
 	]
 })
 

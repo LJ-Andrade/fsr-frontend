@@ -7,6 +7,7 @@
 		}">
 
 		<form class="main-form" [formGroup]="sectionForm">
+			{{ sectionForm.value | json }}
 			<div class="grid grid-cols-12 gap-4">
 				@for(field of formFields; track $index) {
 					@if(!field.hidden) {
@@ -23,11 +24,12 @@
 
 							@case('select') {
 								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+									<!-- Field: {{ field | json}} -->
 									<p-iftalabel class="w-full">
 										<p-select class="w-full"
 											[formControlName]="field.name"
 											[options]="field.options.data"
-											[optionLabel]="field.options.valueName"
+											[optionLabel]="field.options.displayField"
 											[placeholder]="field.placeholder"
 											[optionValue]="field.options.valueName"
 										/>

@@ -15,8 +15,9 @@ import { SectionConfig, ListData, ListConfig } from '@src/app/interfaces/crud.in
 })
 
 export class StatesComponent extends CrudBase  {
-    
+
     override ngOnInit() {
+        this.debug = true;
         this.fetchRelation('countries', 'country')
         super.ngOnInit()
     }
@@ -39,18 +40,20 @@ export class StatesComponent extends CrudBase  {
             }
         },
         
-        { name: 'code', text: 'Code',
+        { name: 'code', text: 'Code', showAsBadge: true, badgeBgClass: 'bg-yellow-50',
             search: {
                 placeholder: 'By code...',
             }
         },
-        { name: 'countries', text: 'Country', columnClass: 'w-6', showAsBadge: true,
+        
+        { name: 'country', text: 'Country', columnClass: 'w-6', showAsBadge: true,
+            isRelation: true, relationName: 'countries', relationFieldName: 'name',
             search: { placeholder: 'By country...', type: 'select',
                 options: { 
                     name: 'countries', valueName: 'name', data: []
                 },
-            },
-            relation: true, relationName: 'countries', relationFieldName: 'name' },
+            }
+        },
     ];
 
     override listConfig: ListConfig = {
@@ -69,10 +72,10 @@ export class StatesComponent extends CrudBase  {
         { name: 'code', label: 'Code', value: '', placeholder: 'Enter the state code', type: 'text', class: 'col-span-12',
             validators: [ Validators.required, Validators.minLength(2), Validators.maxLength(10)] },
             
-        { name: 'country', label: 'Country', value: '', placeholder: 'Select the country', type: 'select', class: 'col-span-12',
+        { name: 'country_id', label: 'Country', value: '', placeholder: 'Select the country', type: 'select', class: 'col-span-12',
             isRelation: true,
             options: { 
-                name: 'countries', valueName: 'name', data: []
+                name: 'countries', valueName: 'country_id', displayField: 'name', data: []
             },
             validators: [ Validators.required ]
         }

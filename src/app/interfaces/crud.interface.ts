@@ -12,12 +12,22 @@ export interface ListData {
 	hideOnCreation?: boolean;
 	hideOnEdition?: boolean;
 	columnClass?: string;
-
-	isArray?: boolean;
+	/**
+	 * Show the value as a badge
+	 * Possible values: true, false
+	*/
 	showAsBadge?: boolean;
-	relation?: boolean;
+	
+	/**
+	 * Background color class for badges
+	 * Possible values: bg-yellow-50, bg-red-50, bg-green-50, bg-blue-50, bg-purple-50, bg-pink-50
+	*/
+	badgeBgClass?: string;
+	isRelation?: boolean;
+	isArray?: boolean;
 	relationName?: any;
 	relationFieldName?: any;
+	
 
 	search?: {
 		placeholder: string;

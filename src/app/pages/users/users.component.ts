@@ -17,6 +17,7 @@ import { SectionConfig, ListData, ListConfig } from '@src/app/interfaces/crud.in
 export class UsersComponent extends CrudBase  {
     
     override ngOnInit() {
+        this.debug = true;
         this.fetchRelation('roles', 'role')
         super.ngOnInit()
     }
@@ -39,13 +40,13 @@ export class UsersComponent extends CrudBase  {
             search: { placeholder: 'By email...' },
          },
         { name: 'roles', text: 'Role', columnClass: 'w-6', showAsBadge: true,
+            isRelation: true, isArray: true, relationName: 'roles', relationFieldName: 'name',
             search: { placeholder: 'By role...', type: 'select',
                 options: { 
                     name: 'roles', valueName: 'name', data: []
                 },
-             },
-            relation: true, relationName: 'roles', relationFieldName: 'name' },
-            
+             }
+        },
         { name: 'first_name', text: 'First Name', 
             search: { placeholder: 'By first name...' },
         },
