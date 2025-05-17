@@ -40,10 +40,10 @@ export class UsersComponent extends CrudBase  {
             search: { placeholder: 'By email...' },
          },
         { name: 'roles', text: 'Role', columnClass: 'w-6', showAsBadge: true,
-            isRelation: true, isArray: true, relationName: 'roles', relationFieldName: 'name',
+            isRelation: true, isArray: true, relationName: 'roles', relationValue: 'id', relationDisplayName: 'name',
             search: { placeholder: 'By role...', type: 'select',
                 options: { 
-                    name: 'roles', valueName: 'name', data: []
+                    name: 'roles', valueName: 'id', displayField: 'name'
                 },
              }
         },

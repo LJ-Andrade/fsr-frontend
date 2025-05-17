@@ -18,8 +18,9 @@ export class StatesComponent extends CrudBase  {
 
     override ngOnInit() {
         this.debug = true;
-        this.fetchRelation('countries', 'country')
         super.ngOnInit()
+        this.fetchRelation('countries', 'country')
+        this.fetchRelation('users', 'user')
     }
 
     override sectionConfig: SectionConfig = {
@@ -46,13 +47,17 @@ export class StatesComponent extends CrudBase  {
             }
         },
         
-        { name: 'country', text: 'Country', columnClass: 'w-6', showAsBadge: true,
-            isRelation: true, relationName: 'countries', relationFieldName: 'name',
-            search: { placeholder: 'By country...', type: 'select',
-                options: { 
-                    name: 'countries', valueName: 'name', data: []
-                },
-            }
+        { name: 'country_id', text: 'Country', columnClass: 'w-6', showAsBadge: true,
+            isRelation: true, relationName: 'countries', relationValue: 'id',  relationDisplayName: 'code', 
+            search: { 
+                placeholder: 'By country...',
+                type: 'select',
+                options: {
+                  name: 'countries',
+                  valueName: 'id',         // ✅ este es el valor que se guarda (ej. 3)
+                  displayField: 'name',    // ✅ este es el texto que se muestra (ej. 'Argentina')
+                }
+              }
         },
     ];
 

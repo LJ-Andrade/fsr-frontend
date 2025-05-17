@@ -17,6 +17,8 @@ import { InputTextModule } from 'primeng/inputtext'
 import { InputGroup } from 'primeng/inputgroup'
 import { SelectModule } from 'primeng/select'
 import { UtilsService } from '@src/app/services/utils.service'
+import { RelationLabelPipe } from '@src/app/pipes/relation-label.pipe';
+
 
 @Component({
 	selector: 'app-crud-manager',
@@ -24,7 +26,7 @@ import { UtilsService } from '@src/app/services/utils.service'
 	standalone: true,
 	imports: [ CommonModule, SkeletonComponent,	 ToolbarModule, CheckboxModule, FormsModule, ReactiveFormsModule,
 		 InputGroupAddonModule, InputTextModule, InputGroup, PaginatorModule, ButtonModule, 
-		 DialogModule, PanelModule, SelectModule
+		 DialogModule, PanelModule, SelectModule, RelationLabelPipe
 	]
 })
 
@@ -38,6 +40,7 @@ export class CrudManagerComponent {
 	@Input() listData: any[] = [];
 	@Input() listConfig: any = {};
 	@Input() apiDataResponse!: Signal<Results<any>>
+	@Input() relations: any = {};
 	@Input() listVisibility: boolean = true;
 	@Input() creationFormVisibility: boolean = true;
 	@Input() searchForm: FormGroup = new FormGroup({});
@@ -97,16 +100,30 @@ export class CrudManagerComponent {
 
 //#region Search
 
+submitSearch() {
+	let searchParams: any = {};
 
-	submitSearch() {
-		let searchParams: any = {};
-		for (const key in this.searchForm.value) {
-			if (this.searchForm.value[key] !== null) {
-				searchParams[key] = this.searchForm.value[key]
-			}
+	for (const key in this.searchForm.value) {
+		const value = this.searchForm.value[key];
+
+		if (value !== null && value !== undefined && value !== '') {
+			searchParams[key] = value;
 		}
-		this.requestRead.emit(searchParams)
 	}
+
+	this.requestRead.emit(searchParams);
+}
+
+
+	// submitSearch() {
+	// 	let searchParams: any = {};
+	// 	for (const key in this.searchForm.value) {
+	// 		if (this.searchForm.value[key] !== null) {
+	// 			searchParams[key] = this.searchForm.value[key]
+	// 		}
+	// 	}
+	// 	this.requestRead.emit(searchParams)
+	// }
 
 	toggleSearchOptions(show: boolean = true) {
 		if (show) {
@@ -252,4 +269,19 @@ export class CrudManagerComponent {
 
 //#endregion Pagination
 
+	getRelationLabel(relationName: string, relationId: any, displayField: string): string {
+		
+		const relationList = this.crudService.apiDataResponse().relations[relationName];
+		if (!relationList || !relationId) return '';
+
+		const match = relationList.find((rel: any) => rel.id == relationId);
+		return match ? match[displayField] : '';
+	}
+
+	relationsReady(): boolean {
+		return this.listData.every(item => {
+		  if (!item.isRelation) return true;
+		  return !!this.crudService.apiDataResponse().relations[item.relationName];
+		});
+	  }
 }

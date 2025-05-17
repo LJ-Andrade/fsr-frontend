@@ -53,14 +53,23 @@
 					@if(column.search) {
 						@if(column.search.type == 'select') {
 							<div class="flex flex-column gap-2 w-full sm:w-full md:w-auto align-items-center">
-								<p-select class="w-full"
+								<!-- <p-select class="w-full"
 									pSize="small"
 									[formControlName]="column.name"
 									[options]="column.search.options.data"
 									[optionLabel]="column.search.options.valueName"
 									[optionValue]="column.search.options.valueName"
 									[placeholder]="column.search.placeholder"
+								/> -->
+								<p-select class="w-full"
+									pSize="small"
+									[formControlName]="column.name"
+									[options]="crudService.apiDataResponse().relations[column.search.options.name]"
+									[optionLabel]="column.search.options.displayField"
+									[optionValue]="column.search.options.valueName"   
+									[placeholder]="column.search.placeholder"
 								/>
+
 									<!-- [optionValue]="field.options.valueName" -->
 							</div>
 						} @else {
@@ -94,7 +103,7 @@
 <div *ngIf="listVisibility">
 	<div class="table-responsive mt-3">
 		@if(!apiDataResponse().loading){
-			<table class="table">
+			<table class="table" *ngIf="relationsReady()">
 				<!-- List Titles -->
 				<thead>
 					<tr>
@@ -126,24 +135,20 @@
 											@if(item.isArray) {
 												@for(relation of record[item.relationName]; track $index) {
 													<span [ngClass]="{'inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset': item.showAsBadge }">
-														{{ relation }}
+														{{ item.relationName | relationLabel:record[item.name]:item.relationDisplayName:item.relationValue }}
 													</span>	
 												}
 											} @else {
 												<span [ngClass]="{'inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset': item.showAsBadge }">
-													{{ record[item.relationFieldName] }}
+													{{ item.relationName | relationLabel:record[item.name]:item.relationDisplayName:item.relationValue }}
+													  <!-- {{ record[item.name] }}
+													{{ item.relationName }}	
+													{{ item.relationValue }}
+													{{ item.relationDisplayName }} -->
+
+
 												</span>
-													
 											}
-											
-											<!-- @if(item.showAsBadge) {
-												<p-badge *ngIf="record[item.relationFieldName] != ''" 
-													[value]="record[item.relationFieldName]" 
-													badgeSize="small" severity="success" 
-												/>
-											} @else {
-												{{ record[item.relationFieldName] }}
-											} -->
 
 										</td>
 

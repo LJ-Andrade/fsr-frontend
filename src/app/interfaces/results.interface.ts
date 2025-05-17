@@ -24,6 +24,7 @@ export interface Link {
 export interface Results<T> {
     loading: boolean;
     results: any[];
+    relations: Record<string, any>;
     pagination?: Pagination<T>;
     error: string;
 }

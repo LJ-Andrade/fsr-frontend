@@ -16,6 +16,7 @@ export class CrudService extends DataService  {
     #state = signal<Results<any>>({
 		loading: true,
 		results: [],
+		relations: {},
 		pagination: undefined,
 		error: ''
 	})
@@ -28,7 +29,7 @@ export class CrudService extends DataService  {
 	public apiDataResponse = this.#state;
 	
 	public clearResults() {
-		this.#state.set({ loading: true, results: [], pagination: undefined, error: '' })
+		this.#state.set({ loading: true, results: [], relations: [], pagination: undefined, error: '' })
 	}
 
 	public read(url: string, params: any = {}) {
@@ -39,10 +40,11 @@ export class CrudService extends DataService  {
 					this.#state.set({
 						loading: false,
 						results: res.data,
+						relations: this.#state().relations,
 						pagination: this.dataService.makePagination(res.meta),
 						error: ''
 					})
-                    console.log(this.#state())
+                    // console.log("State ", this.#state())
 				},
 				error: (error: any) => {
 					console.log("Error on users ", error)
@@ -50,6 +52,18 @@ export class CrudService extends DataService  {
 				complete: () => {
 				}
 			});
+	}
+
+	public appendRelation(name: string, data: any) {
+		this.#state.update(state => ({
+			...state,
+			relations: {
+				...state.relations,
+				[name]: data
+			}
+		}));
+
+		// console.log("Relations ", this.#state())
 	}
 
 	save(data: any, model: string): Observable<any>  {

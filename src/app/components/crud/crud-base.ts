@@ -17,7 +17,7 @@ export class CrudBase implements OnInit {
 	creationFormVisibility: boolean = false;
 	currentPage: number = 1;
 
-	relations: { [key: string]: any } = {};
+	// relations: { [key: string]: any } = {};
 	debug: boolean = false;
 
     ngOnInit(): void {
@@ -25,15 +25,15 @@ export class CrudBase implements OnInit {
 	   	this.buildSectionForm();
 		this.buildSearchForm();
 
-		if (this.debug) {
-			console.info("Debug mode is activated on the current view file")
-			console.log('Section config ', this.sectionConfig)
-			console.log('List data ', this.listData)
-			console.log('List config ', this.listConfig)
-			console.log('Form fields ', this.formFields)
+		// if (this.debug) {
+		// 	console.info("Debug mode is activated on the current view file")
+		// 	console.log('Section config ', this.sectionConfig)
+		// 	console.log('List data ', this.listData)
+		// 	console.log('List config ', this.listConfig)
+		// 	console.log('Form fields ', this.formFields)
 			
-			console.log('Relations ', this.relations)
-		}
+		// 	console.log('Relations ', this.relations)
+		// }
 
     }
 
@@ -79,7 +79,8 @@ export class CrudBase implements OnInit {
     fetchRelation(model: string, field: string) {
         this.crudService.dataService.getModelData(model).subscribe(
             data => {
-                this.relations[model] = data; 
+                // this.relations[model] = data;
+				this.crudService.appendRelation(model, data);
                 this.updateFormFieldsWithData(field, data);
 				this.updateSearchFormWithData(model, data);
             }
@@ -87,11 +88,11 @@ export class CrudBase implements OnInit {
     }
 
 	buildSectionForm() {
-		this.formFields.forEach(field => {
-			if (field.options && field.options.name) {
-				this.relations[field.options.name] = {};
-			}
-		});
+		// this.formFields.forEach(field => {
+		// 	if (field.options && field.options.name) {
+		// 		this.relations[field.options.name] = {};
+		// 	}
+		// });
 
 		this.sectionForm = new FormGroup({});
 
@@ -115,23 +116,53 @@ export class CrudBase implements OnInit {
 		});
 	}
 
+	private applyRelationDataToField(fieldName: string, relationData: any[], formGroup: FormGroup = this.sectionForm): void {
+		const field = this.formFields.find(f => f.name === fieldName);
+		if (!field || !field.options) return;
+	
+		field.options.data = relationData;
+	
+		const control = formGroup.get(field.name);
+		if (control) {
+			const currentValue = control.value;
+			control.setValue(currentValue); // mantiene el valor actual
+		}
+	}
 
 	updateFormFieldsWithData(fieldName: string, data: any[]) {
-        const field = this.formFields.find(f => f.name === fieldName);
-        if (field && field.options) {
-            field.options.data = data;
-            this.buildSectionForm(); // Rebuilds the form with new data
-        }
-    }
+		this.applyRelationDataToField(fieldName, data, this.sectionForm);
+	}
 
-	updateSearchFormWithData(fieldName: string, data: any[]) {
-        this.listData.forEach((field: any) => {
-			if (field.name == fieldName) {
-				field.search.options.data = data;
-				this.buildSearchForm(); // Rebuilds the form with new data
-			}
-        });
-    }
+	// updateFormFieldsWithData(fieldName: string, data: any[]) {
+    //     const field = this.formFields.find(f => f.name === fieldName);
+    //     if (field && field.options) {
+    //         field.options.data = data;
+    //         this.buildSectionForm(); // Rebuilds the form with new data
+    //     }
+    // }
+
+	updateSearchFormWithData(fieldName: string, _data: any[]): void {
+		const searchField = this.listData.find(f => f.name === fieldName);
+		if (!searchField || !searchField.search) return;
+	
+		// Asegura que options exista, pero NO le metemos .data
+		if (!searchField.search.options) {
+			searchField.search.options = {
+				name: fieldName,
+				valueName: 'id',
+				displayField: 'name'
+			};
+		}
+	}
+
+	// updateSearchFormWithData(fieldName: string, data: any[]) {
+    //     this.listData.forEach((field: any) => {
+	// 		if (field.name == fieldName) {
+	// 			field.search.options.data = data;
+	// 			this.buildSearchForm(); // Rebuilds the form with new data
+	// 		}
+    //     });
+    // }
 
 
 	submitForm() {

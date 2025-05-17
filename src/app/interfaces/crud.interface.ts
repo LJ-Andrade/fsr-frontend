@@ -26,7 +26,8 @@ export interface ListData {
 	isRelation?: boolean;
 	isArray?: boolean;
 	relationName?: any;
-	relationFieldName?: any;
+	relationDisplayName?: any;
+	relationValue?: any;
 	
 
 	search?: {
@@ -35,7 +36,7 @@ export interface ListData {
 		options?: {
 			name: string;
 			valueName: string;
-			data: any[];
+			displayField: string;
 		}
 	}
 
