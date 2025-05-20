@@ -1,3 +1,5 @@
+import { ValidatorFn } from "@angular/forms";
+
 export interface ListData {
 	name: string;
 	text: string;
@@ -47,6 +49,29 @@ export interface ListData {
 	// relationFields?: ListData[];
 	// limitText?: number;
 }
+
+
+export type FormFieldType = 'text' | 'select' | 'number' | 'checkbox' | 'textarea';
+export interface FormFieldOptionConfig {
+	name: string;
+	displayField: string;
+	valueName: string;
+}
+
+export interface FormField {
+	type: FormFieldType;
+	name: string;
+	label?: string;
+	value?: any;
+	placeholder?: string;
+	class?: string;
+	hidden?: boolean;
+	isRelation?: boolean;
+	options?: FormFieldOptionConfig;
+	matchTo?: string;
+	validators?: ValidatorFn[];
+}
+
 
 export interface ListConfig {
 	unDeleteableIds: number[];

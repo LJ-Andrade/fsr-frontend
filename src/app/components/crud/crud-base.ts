@@ -4,6 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ListConfig, ListData, SectionConfig } from '@src/app/interfaces/crud.interface';
 
 
+
 @Injectable({
     providedIn: 'root'
 })
@@ -25,15 +26,14 @@ export class CrudBase implements OnInit {
 	   	this.buildSectionForm();
 		this.buildSearchForm();
 
-		// if (this.debug) {
-		// 	console.info("Debug mode is activated on the current view file")
-		// 	console.log('Section config ', this.sectionConfig)
-		// 	console.log('List data ', this.listData)
-		// 	console.log('List config ', this.listConfig)
-		// 	console.log('Form fields ', this.formFields)
+		if (this.debug) {
+			console.info("Debug mode is activated on the current view file")
+			console.log('Section config ', this.sectionConfig)
+			console.log('List data ', this.listData)
+			console.log('List config ', this.listConfig)
+			console.log('Form fields ', this.formFields)
 			
-		// 	console.log('Relations ', this.relations)
-		// }
+		}
 
     }
 
@@ -72,28 +72,27 @@ export class CrudBase implements OnInit {
 		params['list_regs_per_page'] = perPage;
 		this.currentPage = params['page']
 		
-		this.crudService.read(this.sectionConfig.model, params)
+		this.crudService.read(this.sectionConfig.model, params, this.debug)
 
 	}
 
-    fetchRelation(model: string, field: string) {
+    fetchRelation(model: string, field: string, debug: boolean = false) {
         this.crudService.dataService.getModelData(model).subscribe(
             data => {
                 // this.relations[model] = data;
 				this.crudService.appendRelation(model, data);
                 this.updateFormFieldsWithData(field, data);
 				this.updateSearchFormWithData(model, data);
+				if (debug) {
+					console.log("Relations ", this.crudService.relations())
+				}
             }
         );
     }
 
-	buildSectionForm() {
-		// this.formFields.forEach(field => {
-		// 	if (field.options && field.options.name) {
-		// 		this.relations[field.options.name] = {};
-		// 	}
-		// });
 
+
+	buildSectionForm() {
 		this.sectionForm = new FormGroup({});
 
 		this.formFields.forEach(field => {
@@ -104,8 +103,8 @@ export class CrudBase implements OnInit {
 			if (field.value)
 				this.sectionForm.get(field.name)?.setValue(field.value)
 		});
-
 	}
+
 
 	buildSearchForm() {
 		this.listData.forEach((field: any) => {
@@ -133,13 +132,6 @@ export class CrudBase implements OnInit {
 		this.applyRelationDataToField(fieldName, data, this.sectionForm);
 	}
 
-	// updateFormFieldsWithData(fieldName: string, data: any[]) {
-    //     const field = this.formFields.find(f => f.name === fieldName);
-    //     if (field && field.options) {
-    //         field.options.data = data;
-    //         this.buildSectionForm(); // Rebuilds the form with new data
-    //     }
-    // }
 
 	updateSearchFormWithData(fieldName: string, _data: any[]): void {
 		const searchField = this.listData.find(f => f.name === fieldName);
@@ -155,18 +147,8 @@ export class CrudBase implements OnInit {
 		}
 	}
 
-	// updateSearchFormWithData(fieldName: string, data: any[]) {
-    //     this.listData.forEach((field: any) => {
-	// 		if (field.name == fieldName) {
-	// 			field.search.options.data = data;
-	// 			this.buildSearchForm(); // Rebuilds the form with new data
-	// 		}
-    //     });
-    // }
-
 
 	submitForm() {
-		console.log(this.validateForm())
 		if(!this.validateForm()) {
 			return
 		}
@@ -205,7 +187,8 @@ export class CrudBase implements OnInit {
 				}
 			},
 			complete: () => {
-				this.sectionForm.reset();
+				this.clearCreationForm();
+				// this.sectionForm.reset();
 			}
 		});
 	}
@@ -213,7 +196,7 @@ export class CrudBase implements OnInit {
 	validateForm(): boolean {
 		if (!this.sectionForm.valid) {
 			this.sectionForm.markAllAsTouched();
-			console.log("Error on form ", this.sectionForm)
+			// console.log("Error on form ", this.sectionForm)
 			return false
 		} else {
 			return true
@@ -300,8 +283,17 @@ export class CrudBase implements OnInit {
 
 	clearCreationForm(): void {
 		this.sectionForm.reset();
-		this.sectionForm.clearValidators();
+		// this.sectionForm.clearValidators();
+		// this.sectionForm.updateValueAndValidity();
+
+		Object.values(this.sectionForm.controls).forEach(control => {
+			control.markAsPristine();
+			control.markAsUntouched();
+			control.setErrors(null);
+		});
+	
 		this.sectionForm.updateValueAndValidity();
+		console.log("Form ", this.sectionForm)
 	}
 
 		

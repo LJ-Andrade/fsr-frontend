@@ -22,6 +22,7 @@ export class CrudService extends DataService  {
 	})
     
     public results = computed(() => this.#state().results)
+	public relations = computed(() => this.#state().relations)
 	public pagination = computed(() => this.#state().pagination)
 	public loading = computed(() => this.#state().loading)
 	public error = computed(() => this.#state().error)
@@ -32,7 +33,7 @@ export class CrudService extends DataService  {
 		this.#state.set({ loading: true, results: [], relations: [], pagination: undefined, error: '' })
 	}
 
-	public read(url: string, params: any = {}) {
+	public read(url: string, params: any = {}, debug: boolean = false) {
 		
 		this.dataService.httpFetch(url, params)
 			.subscribe({
@@ -44,7 +45,7 @@ export class CrudService extends DataService  {
 						pagination: this.dataService.makePagination(res.meta),
 						error: ''
 					})
-                    // console.log("State ", this.#state())
+					if (debug) console.log("State ", this.#state());
 				},
 				error: (error: any) => {
 					console.log("Error on users ", error)

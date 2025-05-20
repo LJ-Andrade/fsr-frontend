@@ -4,7 +4,7 @@ import { Validators } from '@angular/forms';
 import { CrudBase } from '@src/app/components/crud/crud-base';
 import { CrudManagerComponent } from '@src/app/components/crud/crud-manager.component';
 import { CrudFormComponent } from '@src/app/components/crud/crud-form.component';
-import { SectionConfig, ListData, ListConfig } from '@src/app/interfaces/crud.interface';
+import { SectionConfig, ListData, ListConfig, FormField } from '@src/app/interfaces/crud.interface';
 
 
 @Component({
@@ -19,8 +19,7 @@ export class StatesComponent extends CrudBase  {
     override ngOnInit() {
         this.debug = true;
         super.ngOnInit()
-        this.fetchRelation('countries', 'country')
-        this.fetchRelation('users', 'user')
+        this.fetchRelation('countries', 'country_id', this.debug)
     }
 
     override sectionConfig: SectionConfig = {
@@ -35,7 +34,7 @@ export class StatesComponent extends CrudBase  {
         { name: 'id', text: 'Id', columnClass: 'w-3', hideOnCreation: false, hideOnEdition: false,
             unDeleteableIds: [ 1, 2 ], unEditableIds: [ 1, 2 ] },
 
-        { name: 'name', text: 'Name', 
+        { name: 'name', text: 'Name',
             search: {
                 placeholder: 'By name...'
             }
@@ -47,15 +46,15 @@ export class StatesComponent extends CrudBase  {
             }
         },
         
-        { name: 'country_id', text: 'Country', columnClass: 'w-6', showAsBadge: true,
-            isRelation: true, relationName: 'countries', relationValue: 'id',  relationDisplayName: 'code', 
+        { name: 'country_id', text: 'Country', columnClass: 'w-6', showAsBadge: false,
+            isRelation: true, relationName: 'countries', relationValue: 'id',  relationDisplayName: 'name', 
             search: { 
                 placeholder: 'By country...',
                 type: 'select',
                 options: {
                   name: 'countries',
-                  valueName: 'id',         // ✅ este es el valor que se guarda (ej. 3)
-                  displayField: 'name',    // ✅ este es el texto que se muestra (ej. 'Argentina')
+                  valueName: 'id',
+                  displayField: 'name',
                 }
               }
         },
@@ -66,7 +65,7 @@ export class StatesComponent extends CrudBase  {
         unEditableIds: []
     }
 
-    override formFields: any[] = [
+    override formFields: FormField[] = [
 
         { name: 'id', label: 'Id', value: '', placeholder: 'Enter the state id', type: 'text', class: 'col-span-12',
             hidden: true }, 
@@ -80,7 +79,7 @@ export class StatesComponent extends CrudBase  {
         { name: 'country_id', label: 'Country', value: '', placeholder: 'Select the country', type: 'select', class: 'col-span-12',
             isRelation: true,
             options: { 
-                name: 'countries', valueName: 'country_id', displayField: 'name', data: []
+                name: 'countries', valueName: 'id', displayField: 'name'
             },
             validators: [ Validators.required ]
         }

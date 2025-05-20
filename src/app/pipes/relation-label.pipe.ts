@@ -6,6 +6,7 @@ import { CrudService } from '@src/app/services/crud.service';
 	standalone: true,
 	pure: true
 })
+
 export class RelationLabelPipe implements PipeTransform {
 
 	constructor(private crudService: CrudService) {}
@@ -14,13 +15,12 @@ export class RelationLabelPipe implements PipeTransform {
 		relationName: string,
 		relationId: any,
 		displayField: string,
-		valueField: string = 'id' // por defecto sigue siendo 'id'
+		valueField: string = 'id' 
 	): string {
-		const relation = this.crudService.apiDataResponse().relations[relationName];
-		if (!relation || relationId === null || relationId === undefined) return '';
+		const relation = this.crudService.apiDataResponse().relations[relationName]
+		if (!relation || relationId === null || relationId === undefined) return ''
         
-		const match = relation.find((r: any) => r[valueField] === relationId);
-        console.log(relation)
-		return match ? match[displayField] : '';
+		const match = relation.find((r: any) => r[valueField] === relationId)
+		return match ? match[displayField] : ''
 	}
 }

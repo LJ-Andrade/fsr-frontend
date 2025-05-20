@@ -7,7 +7,7 @@
 		}">
 
 		<form class="main-form" [formGroup]="sectionForm">
-			{{ sectionForm.value | json }}
+			<!-- {{ sectionForm.value | json }} -->
 			<div class="grid grid-cols-12 gap-4">
 				@for(field of formFields; track $index) {
 					@if(!field.hidden) {
