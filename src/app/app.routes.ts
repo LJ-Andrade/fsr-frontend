@@ -11,6 +11,7 @@ import { UsersComponent } from './pages/users/users.component';
 import { RolesComponent } from './pages/roles/roles.component';
 import { CountriesComponent } from './pages/countries/countries.component';
 import { StatesComponent } from './pages/states/states.component';
+import { ClientsComponent } from './pages/clients/clients.component';
 
 /**
  * App routes
@@ -96,8 +97,16 @@ export const routes: Routes = [
 							title: 'States',
 							icon: 'pi pi-map'
 						}
-					}
+					},
 				]
+			},
+			{
+				path: 'clients',
+				component: ClientsComponent,
+				data: {
+					title: 'Clients',
+					icon: 'pi pi-map'
+				}
 			}
 		]
 	}

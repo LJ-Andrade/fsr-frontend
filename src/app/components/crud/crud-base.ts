@@ -1,9 +1,7 @@
-import { Injectable, OnInit, inject } from '@angular/core';
-import { CrudService } from '@src/app/services/crud.service';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ListConfig, ListData, SectionConfig } from '@src/app/interfaces/crud.interface';
-
-
+import { Injectable, OnInit, inject } from '@angular/core'
+import { CrudService } from '@src/app/services/crud.service'
+import { FormControl, FormGroup } from '@angular/forms'
+import { ListConfig, ListData, SectionConfig } from '@src/app/interfaces/crud.interface'
 
 @Injectable({
     providedIn: 'root'
@@ -11,20 +9,20 @@ import { ListConfig, ListData, SectionConfig } from '@src/app/interfaces/crud.in
 
 export class CrudBase implements OnInit {
 
-	crudService: CrudService = inject(CrudService);
+	crudService: CrudService = inject(CrudService)
 
-	listVisibility: boolean = true;
-	batchDeleteButtonVisible: boolean = false;
-	creationFormVisibility: boolean = false;
-	currentPage: number = 1;
+	listVisibility: boolean = true
+	batchDeleteButtonVisible: boolean = false
+	creationFormVisibility: boolean = false
+	currentPage: number = 1
 
 	// relations: { [key: string]: any } = {};
 	debug: boolean = false;
 
     ngOnInit(): void {
-	   	this.fetchData();
-	   	this.buildSectionForm();
-		this.buildSearchForm();
+	   	this.fetchData()
+	   	this.buildSectionForm()
+		this.buildSearchForm()
 
 		if (this.debug) {
 			console.info("Debug mode is activated on the current view file")
@@ -32,14 +30,12 @@ export class CrudBase implements OnInit {
 			console.log('List data ', this.listData)
 			console.log('List config ', this.listConfig)
 			console.log('Form fields ', this.formFields)
-			
 		}
-
     }
 
 	ngOnDestroy(): void {
-		this.clearCreationForm();
-		this.crudService.clearResults();
+		this.clearCreationForm()
+		this.crudService.clearResults()
 	}
 
 	sectionConfig: SectionConfig = {
@@ -48,14 +44,14 @@ export class CrudBase implements OnInit {
 		nameSingular: '',
 		namePlural: '',
         formSize: 'LARGE',
-	}	
+	}
 
-	listData: ListData[] = [];
+	listData: ListData[] = []
 	listConfig: ListConfig = { unDeleteableIds: [], unEditableIds: [] }
-	formFields: any[] = [];
-	sectionForm: FormGroup = new FormGroup({});
-	searchForm: FormGroup = new FormGroup({});
-	currentRecord: any = {};
+	formFields: any[] = []
+	sectionForm: FormGroup = new FormGroup({})
+	searchForm: FormGroup = new FormGroup({})
+	currentRecord: any = {}
 
 
 	fetchData(params: any = {}) {
@@ -79,7 +75,6 @@ export class CrudBase implements OnInit {
     fetchRelation(model: string, field: string, debug: boolean = false) {
         this.crudService.dataService.getModelData(model).subscribe(
             data => {
-                // this.relations[model] = data;
 				this.crudService.appendRelation(model, data);
                 this.updateFormFieldsWithData(field, data);
 				this.updateSearchFormWithData(model, data);
@@ -152,6 +147,7 @@ export class CrudBase implements OnInit {
 		if(!this.validateForm()) {
 			return
 		}
+		var operation: string = '';
 
 		this.crudService.save(this.sectionForm.getRawValue(), this.sectionConfig.model)!
 		.subscribe({
@@ -159,7 +155,9 @@ export class CrudBase implements OnInit {
 				let message: string = '';
 				if (res.meta && res.meta.operation == 'update') {
 					message = 'The record has been updated successfully';
+					operation = 'update';
 				} else {
+					operation = 'create';
 					message = 'The record has been created successfully';
 				}
 				this.crudService.notificationService.success(message, '');
@@ -187,8 +185,9 @@ export class CrudBase implements OnInit {
 				}
 			},
 			complete: () => {
-				this.clearCreationForm();
-				// this.sectionForm.reset();
+				if (operation == 'create') {
+					this.clearCreationForm()
+				}
 			}
 		});
 	}
@@ -226,7 +225,6 @@ export class CrudBase implements OnInit {
 		
 		if(visibility) {
 			this.creationFormVisibility = true;
-			// this.currentRecord = record;
 			this.fillFormWithRecordData(record);
 		} else {
 			this.creationFormVisibility = false;
@@ -293,7 +291,7 @@ export class CrudBase implements OnInit {
 		});
 	
 		this.sectionForm.updateValueAndValidity();
-		console.log("Form ", this.sectionForm)
+		// console.log("Form ", this.sectionForm)
 	}
 
 		

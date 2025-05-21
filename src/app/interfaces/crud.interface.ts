@@ -35,11 +35,7 @@ export interface ListData {
 	search?: {
 		placeholder: string;
 		type?: string;
-		options?: {
-			name: string;
-			valueName: string;
-			displayField: string;
-		}
+		options?: FormFieldOptionConfig
 	}
 
 	// manyRelations?: boolean;
@@ -53,9 +49,10 @@ export interface ListData {
 
 export type FormFieldType = 'text' | 'select' | 'number' | 'checkbox' | 'textarea';
 export interface FormFieldOptionConfig {
-	name: string;
-	displayField: string;
-	valueName: string;
+	name?: string;
+	displayField?: string;
+	valueName?: string;
+	items?: any[];
 }
 
 export interface FormField {

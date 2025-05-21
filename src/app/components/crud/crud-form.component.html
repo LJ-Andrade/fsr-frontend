@@ -15,7 +15,19 @@
 							@case('text') {
 								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
 									<p-iftalabel>
-										<input [fluid]="true" [formControlName]="field.name" pInputText [placeholder]="field.placeholder" text="text" />
+										<input [fluid]="true" [formControlName]="field.name" pInputText 
+										[placeholder]="field.placeholder" type="text" />
+										<label for="username">{{ field.label }}</label>
+									</p-iftalabel>
+									<app-field-error [field]="sectionForm.get(field.name)"/>
+								</div>
+							}
+
+							@case('number') {
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden,'mb-3': true }">
+									<p-iftalabel>
+										<input [fluid]="true" [formControlName]="field.name" pInputText 
+										[placeholder]="field.placeholder" type="number" />
 										<label for="username">{{ field.label }}</label>
 									</p-iftalabel>
 									<app-field-error [field]="sectionForm.get(field.name)"/>
@@ -25,14 +37,25 @@
 							@case('select') {
 								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
 									<!-- Field: {{ field | json}} -->
+									
 									<p-iftalabel class="w-full">
-										<p-select class="w-full"
-											[formControlName]="field.name"
-											[options]="field.options.data"
-											[optionLabel]="field.options.displayField"
-											[placeholder]="field.placeholder"
-											[optionValue]="field.options.valueName"
-										/>
+										@if(field.options.items != null && field.options.items.length > 0) {
+											<p-select class="w-full"
+												[formControlName]="field.name"
+												[options]="field.options.items"
+												[optionLabel]="field.options.displayField"
+												[placeholder]="field.placeholder"
+												[optionValue]="field.options.valueName"
+											/>
+										} @else {
+											<p-select class="w-full"
+												[formControlName]="field.name"
+												[options]="field.options.data"
+												[optionLabel]="field.options.displayField"
+												[placeholder]="field.placeholder"
+												[optionValue]="field.options.valueName"
+											/>
+										}	
 										<label>{{ field.label }}</label>
 									</p-iftalabel>
 									<app-field-error [field]="sectionForm.get(field.name)" />
