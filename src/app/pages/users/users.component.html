@@ -16,6 +16,7 @@
 		<app-crud-form
 			[sectionForm]="sectionForm"
 			[formFields]="formFields"
+            [existingImageUrl]="existingImageUrl"
 			[formSize]="sectionConfig.formSize"
 			[loading]="crudService.apiDataResponse().loading"
 			(submitFormEvent)="submitForm()"

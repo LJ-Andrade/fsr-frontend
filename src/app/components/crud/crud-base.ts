@@ -15,21 +15,26 @@ export class CrudBase implements OnInit {
 	batchDeleteButtonVisible: boolean = false
 	creationFormVisibility: boolean = false
 	currentPage: number = 1
-
+	existingImageUrl: string | null = null;
 	// relations: { [key: string]: any } = {};
-	debug: boolean = false;
+	debugData: boolean = false;
+	debugCreationForm: boolean = true;
 
     ngOnInit(): void {
 	   	this.fetchData()
 	   	this.buildSectionForm()
 		this.buildSearchForm()
 
-		if (this.debug) {
+		if (this.debugData) {
 			console.info("Debug mode is activated on the current view file")
 			console.log('Section config ', this.sectionConfig)
 			console.log('List data ', this.listData)
 			console.log('List config ', this.listConfig)
 			console.log('Form fields ', this.formFields)
+		}
+
+		if (this.debugCreationForm) {
+			this.toggleCreationForm()
 		}
     }
 
@@ -68,7 +73,7 @@ export class CrudBase implements OnInit {
 		params['list_regs_per_page'] = perPage;
 		this.currentPage = params['page']
 		
-		this.crudService.read(this.sectionConfig.model, params, this.debug)
+		this.crudService.read(this.sectionConfig.model, params, this.debugData)
 
 	}
 
@@ -144,6 +149,9 @@ export class CrudBase implements OnInit {
 
 
 	submitForm() {
+
+		console.log(this.sectionForm.value)
+		
 		if(!this.validateForm()) {
 			return
 		}
@@ -232,29 +240,42 @@ export class CrudBase implements OnInit {
 		}
 	}
 	
-	fillFormWithRecordData(record: any) {
-		// console.log('Record ', record)
-		// console.log('Form ', this.sectionForm)
-		// this.sectionForm.patchValue(record);
-		// console.log("form fields ", this.formFields)
-		this.formFields.forEach(field => {
+	// fillFormWithRecordData(record: any) {
+	// 	this.formFields.forEach(field => {
 			
-			if(field.isRelation) {
-				// console.log(this.sectionForm.get(field.name))
-				// console.log("Record ", record)
-				// console.log("Field name ", field.options.name)
-				// console.log('Relation ', field.name, record[field.options.name][0])
+	// 		if(field.isRelation) {
+	// 			if (record[field.options.name][0] == undefined) {
+	// 				this.sectionForm.get(field.name)?.setValue(null);
+	// 			} else {
+	// 				this.sectionForm.get(field.name)?.setValue(record[field.options.name][0]);
+	// 			}
+	// 		} else {
+	// 			this.sectionForm.get(field.name)?.setValue(record[field.name]);
+	// 		}
+	// 	});
+	// }
+
+	fillFormWithRecordData(record: any) {
+		this.formFields.forEach(field => {
+	
+			if (field.isRelation) {
 				if (record[field.options.name][0] == undefined) {
 					this.sectionForm.get(field.name)?.setValue(null);
 				} else {
 					this.sectionForm.get(field.name)?.setValue(record[field.options.name][0]);
 				}
 			} else {
-				// console.log("normal field")
 				this.sectionForm.get(field.name)?.setValue(record[field.name]);
+	
+				// Si es el campo 'image', además lo guardamos en una propiedad para mostrar el preview
+				if (field.name === 'image') {
+					// Esta propiedad debe existir en tu componente hijo, que extiende CrudBase
+					(this as any).existingImageUrl = record[field.name];
+				}
 			}
 		});
 	}
+	
 
 
 	toggleList(visibility: boolean = true): void {

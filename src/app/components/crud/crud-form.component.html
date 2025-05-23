@@ -13,7 +13,8 @@
 					@if(!field.hidden) {
 						@switch (field.type) {
 							@case('text') {
-								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }"
+									class="col-span-12">
 									<p-iftalabel>
 										<input [fluid]="true" [formControlName]="field.name" pInputText 
 										[placeholder]="field.placeholder" type="text" />
@@ -24,7 +25,8 @@
 							}
 
 							@case('number') {
-								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden,'mb-3': true }">
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden,'mb-3': true }"
+									class="col-span-12">
 									<p-iftalabel>
 										<input [fluid]="true" [formControlName]="field.name" pInputText 
 										[placeholder]="field.placeholder" type="number" />
@@ -35,7 +37,8 @@
 							}
 
 							@case('select') {
-								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }">
+								<div [class]="field.class" [ngClass]="{ 'Hidden': field.hidden, 'mb-3': true }"
+									class="col-span-12">
 									<!-- Field: {{ field | json}} -->
 									
 									<p-iftalabel class="w-full">
@@ -61,9 +64,48 @@
 									<app-field-error [field]="sectionForm.get(field.name)" />
 								</div>
 							}
+
+							@case('image') {
+								<div [class]="field.class" [ngClass]="{'mb-3': true }" class="col-span-12">
+									<app-image-uploader
+										[formGroup]="sectionForm"
+										[fieldName]="field.name"
+										[currentImage]="field.currentImage"
+										[useCropper]="field.imageProperties.useCropper ?? false"
+										[aspectRatio]="field.imageProperties.aspectRatio ?? 16/9"
+										[resizeToWidth]="field.imageProperties.resizeToWidth ?? 400"
+										(onImageSelected)="field.onImageSelected ? field.onImageSelected($event) : null"
+										(onImageDeleted)="field.onImageDeleted ? field.onImageDeleted($event) : null"
+									></app-image-uploader>
+								</div>
+
+								<!-- <div [class]="field.class" [ngClass]="{ 'mb-3': true }" class="col-span-6">
+									<input id="imageInput" type="file" class="hidden" (change)="fileChangeEvent($event)" />
+									<p-button (onClick)="triggerImageUpload()">Upload image...</p-button>
+									<image-cropper
+										[imageChangedEvent]="imageChangedEvent"
+										[maintainAspectRatio]="true"
+										[aspectRatio]="1 / 1"
+										format="png"
+										(imageCropped)="imageCropped($event)">
+									</image-cropper>
+	
+									<img *ngIf="croppedImage" [src]="croppedImage" />
+								</div>
+
+								<div [class]="field.class" [ngClass]="{ 'mb-3': true }" class="col-span-6">
+									<app-image-previewer
+										*ngIf="sectionForm.get(field.name)?.value"
+										[image]="sectionForm.get(field.name)?.value"
+										[allowDelete]="true"
+										(deleteImageRequested)="onImageDeleted()">
+									</app-image-previewer>
+								</div> -->
+
+							}
 						}
 					}
-				}   
+				}
 
 				<div class="col-span-12 mt-3">
 					<p-button 

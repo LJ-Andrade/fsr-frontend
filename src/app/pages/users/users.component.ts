@@ -18,9 +18,9 @@ import { matchToValidator } from '@src/app/validators/match-fields.validator'
 export class UsersComponent extends CrudBase  {
 
 	override ngOnInit() {
-		this.debug = false;
+		this.debugData = false;
 		super.ngOnInit()
-		this.fetchRelation('roles', 'role', this.debug)
+		this.fetchRelation('roles', 'role', this.debugData)
 	}
 
 	override sectionConfig: SectionConfig = {
@@ -28,7 +28,7 @@ export class UsersComponent extends CrudBase  {
 		icon: 'pi pi-users',
 		nameSingular: 'user',
 		namePlural: 'users',
-		formSize: 'MEDIUM',
+		formSize: 'LARGE',
 	}
 
 	override listData: ListData[] = [
@@ -44,8 +44,6 @@ export class UsersComponent extends CrudBase  {
 		 },
 
 		{ name: 'roles', text: 'Role', columnClass: 'w-6', showAsBadge: true,
-			// isRelation: false, relationName: 'roles', relationValue: 'id', relationDisplayName: 'name', 
-			// isArray: false,
 			search: { 
 				placeholder: 'By role...',
 				type: 'select',
@@ -63,7 +61,7 @@ export class UsersComponent extends CrudBase  {
 
 		{ name: 'last_name', text: 'Last Name', columnClass: '',
 			search: { placeholder: 'By last name...' },
-		 }
+		}
 	];
 
 	override listConfig: ListConfig = {
@@ -76,34 +74,54 @@ export class UsersComponent extends CrudBase  {
 		{ name: 'id', label: 'Id', value: '', placeholder: 'Enter the id', type: 'text', class: 'col-span-12',
 			hidden: true },
 
-		{ name: 'user', label: 'Username', value: '', placeholder: 'Enter the username', type: 'text', class: 'col-span-12',
+		{ name: 'user', label: 'Username', value: '', placeholder: 'Enter the username', type: 'text', 
+			class: 'sm:col-span-3 md:col-span-3',
 			validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
 	   
-		{ name: 'first_name', label: 'First Name', value: '', placeholder: 'Enter the first name', type: 'text', class: 'col-span-6',
+		{ name: 'first_name', label: 'First Name', value: '', placeholder: 'Enter the first name', type: 'text', 
+			class: 'sm:col-span-3 md:col-span-3',
 			validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
 	   
-		{ name: 'last_name', label: 'Last Name', value: '', placeholder: 'Enter the last name', type: 'text', class: 'col-span-6',
+		{ name: 'last_name', label: 'Last Name', value: '', placeholder: 'Enter the last name', type: 'text', 
+			class: 'sm:col-span-3 md:col-span-3',
 			validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
 		
-		{ name: 'email', label: 'Email', value: '', placeholder: 'Enter the email', type: 'text', class: 'col-span-12',
-				validators: [ Validators.required, Validators.email, Validators.minLength(3), Validators.maxLength(50)] },
-
-		{ name: 'password', label: 'Password', value: '', placeholder: 'Enter the password', 
-			type: 'text', class: 'col-span-6',
-			validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
-
-		{ name: 'confirm_password', label: 'Confirm Password', value: '', placeholder: 'Enter the password', 
-			type: 'text', class: 'col-span-6',
-			matchTo: 'password', 
-			validators: [ Validators.required, matchToValidator('password') ] },
-
-		{ name: 'role', label: 'Role', value: '', placeholder: 'Select the role', type: 'select', class: 'col-span-12',
+		{ name: 'role', label: 'Role', value: '', placeholder: 'Select the role', type: 'select', 
+			class: 'sm:col-span-3 md:col-span-3',
 			isRelation: true,
 			options: { 
 				name: 'roles', valueName: 'name', displayField: 'name'
 			},
 			validators: [  ]
-		}
-	
+		},
+
+		{ name: 'email', label: 'Email', value: '', placeholder: 'Enter the email', type: 'text', 
+			class: 'sm:col-span-4 md:col-span-4',
+				validators: [ Validators.required, Validators.email, Validators.minLength(3), Validators.maxLength(50)] },
+
+		{ name: 'password', label: 'Password', value: '', placeholder: 'Enter the password', 
+			type: 'text', 
+			class: 'sm:col-span-4 md:col-span-4',
+			validators: [ Validators.required, Validators.minLength(3), Validators.maxLength(50)] },
+
+		{ name: 'confirm_password', label: 'Confirm Password', value: '', placeholder: 'Enter the password', 
+			type: 'text', 
+			class: 'sm:col-span-4 md:col-span-4',
+			matchTo: 'password',
+			validators: [ Validators.required, matchToValidator('password') ] },
+
+		
+
+		{ name: 'avatar', label: 'Avatar', value: '', placeholder: 'Upload an avatar image', class: '',
+			type: 'image',
+			imageProperties: {
+				accept: 'image/*',
+				maxSize: 1000000,
+				useCropper: true,
+				aspectRatio: 1,
+				resizeToWidth: 300,
+			},
+			validators: [] 
+		},
 	]
 }

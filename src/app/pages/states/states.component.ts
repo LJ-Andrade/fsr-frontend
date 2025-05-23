@@ -17,9 +17,9 @@ import { SectionConfig, ListData, ListConfig, FormField } from '@src/app/interfa
 export class StatesComponent extends CrudBase  {
 
     override ngOnInit() {
-        this.debug = true;
+        this.debugData = true;
         super.ngOnInit()
-        this.fetchRelation('countries', 'country_id', this.debug)
+        this.fetchRelation('countries', 'country_id', this.debugData)
     }
 
     override sectionConfig: SectionConfig = {
